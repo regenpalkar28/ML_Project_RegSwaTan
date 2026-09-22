@@ -1,0 +1,117 @@
+# ==========================================
+# Byte-compiled / optimized / DLL files
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ==========================================
+# Virtual Environments & Packages
+# ==========================================
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+build/
+dist/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ==========================================
+# Environment & Configuration
+# ==========================================
+.env
+.env.local
+
+# ==========================================
+# Jupyter Notebook & IDEs
+# ==========================================
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ==========================================
+# Operating System Files
+# ==========================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==========================================
+# Datasets & Data Directories
+# ==========================================
+# Explicitly ignore all dataset directories and all subfolders (Test, Train, Meta, etc.)
+data/German Dataset/
+data/German Dataset/**
+data/Belgian Dataset/
+data/Belgian Dataset/**
+data/Chinese Dataset/
+data/Chinese Dataset/**
+
+# Ignore contents of raw, processed, and split folders
+data/raw/*
+!data/raw/.gitkeep
+
+data/processed/*
+!data/processed/.gitkeep
+
+data/train/*
+!data/train/.gitkeep
+
+data/test/*
+!data/test/.gitkeep
+
+data/validation/*
+!data/validation/.gitkeep
+
+# Data archives & common dataset formats
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.gz
+*.rar
+*.7z
+*.h5
+*.hdf5
+*.parquet
+*.feather
+*.ppm
+
+# ==========================================
+# Model Checkpoints & Weights
+# ==========================================
+checkpoints/*
+!checkpoints/.gitkeep
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.onnx
+*.safetensors
+*.pkl
+*.joblib
+*.weights
+*.pb
+
+# ==========================================
+# Experiment Logs & Results
+# ==========================================
+results/plots/*
+!results/plots/.gitkeep
+results/csv/*
+!results/csv/.gitkeep
+results/confusion_matrices/*
+!results/confusion_matrices/.gitkeep
+wandb/
+runs/
+logs/
+*.tfevents.*
