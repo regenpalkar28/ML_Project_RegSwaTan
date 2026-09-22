@@ -1,0 +1,182 @@
+# Data Pipeline Architecture & Implementation Plan: Multi-Benchmark Traffic Sign Recognition
+
+## Executive Summary & What Has Been Achieved
+
+We have designed and implemented a production-grade, unified PyTorch data pipeline capable of ingesting, preprocessing, augmenting, and batching three major traffic sign classification benchmarks located in `root/data`:
+
+1. **German Traffic Sign Recognition Benchmark (GTSRB)** — 43 classes
+2. **Belgium Traffic Sign Classification Benchmark (BelgiumTSC)** — 62 classes
+3. **Chinese Traffic Sign Dataset (CTSD)** — 58 classes
+
+The pipeline abstracts dataset-specific nuances (varying folder hierarchies, annotation formats like CSV and semicolon-separated files, image formats including PNG and PPM, and bounding box coordinate conventions) behind a single, consistent PyTorch interface.
+
+---
+
+## Benchmark Specifications & Dataset Breakdown
+
+| Dataset Benchmark | Origin Folder | Total Images | Classes | Image Format | Annotation Format | Train Split | Validation Split | Test Split |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **German (GTSRB)** | `data/German Dataset` | **51,839** | **43** | PNG | `Train.csv`, `Test.csv`, `Meta.csv` | 31,367 | 7,842 | 12,630 |
+| **Belgian (BelgiumTSC)** | `data/Belgian Dataset` | **7,125** | **62** | PPM | Class-wise `GT-XXXXX.csv` (semicolon) | 3,672 | 919 | 2,534 |
+| **Chinese (CTSD)** | `data/Chinese Dataset` | **6,164** | **58** | PNG | `annotations.csv` | 4,006 | 1,233 | 925 |
+| **Total Ecosystem** | — | **65,128** | — | — | — | **39,045** | **9,994** | **16,089** |
+
+---
+
+## Architectural Components
+
+```
+data/
+├── dataset.py                # Core Dataset classes, transforms, and DataLoader factories
+├── __init__.py               # Clean public package exports
+├── German Dataset/           # GTSRB (43 classes, Train/Test/Meta CSVs)
+├── Belgian Dataset/          # BelgiumTSC (62 classes, PPM images, GT-*.csv)
+└── Chinese Dataset/          # CTSD (58 classes, images/, annotations.csv)
+```
+
+### 1. Central Configuration ([`config.py`](file:///c:/Users/Regen/Machine%20Learning/ML_Project_RegSwaTan/config.py))
+- Defines dataset root paths (`GERMAN_DATASET_DIR`, `BELGIAN_DATASET_DIR`, `CHINESE_DATASET_DIR`).
+- Maintains class count mappings:
+  ```python
+  DATASET_NUM_CLASSES = {
+      "german": 43,
+      "gtsrb": 43,
+      "belgian": 62,
+      "btsc": 62,
+      "chinese": 58,
+      "ctsd": 58,
+  }
+  ```
+- Normalization constants (GTSRB RGB statistics or ImageNet defaults) and default hyperparameters (`IMAGE_SIZE = (32, 32)`, `BATCH_SIZE = 64`, `VAL_SPLIT = 0.2`).
+
+---
+
+### 2. Dataset Implementations ([`data/dataset.py`](file:///c:/Users/Regen/Machine%20Learning/ML_Project_RegSwaTan/data/dataset.py))
+
+#### A. German Dataset (`GTSRBDataset`)
+- Reads `Train.csv` and `Test.csv`.
+- Performs reproducible stratified splitting across 43 classes to produce training (31,367) and validation (7,842) subsets.
+- Supports bounding box ROI cropping (`Roi.X1`, `Roi.Y1`, `Roi.X2`, `Roi.Y2`).
+
+#### B. Belgian Dataset (`BelgianDataset`)
+- Recursively parses `BelgiumTSC_Training/Training` and `BelgiumTSC_Testing/Testing` directory trees across all 62 class folders (`00000` to `00061`).
+- Ingests semicolon-delimited `GT-*.csv` files, standardizing column headers case-insensitively.
+- Loads 3-channel PPM images, supporting bounding box ROI cropping and stratified train/val splitting.
+
+#### C. Chinese Dataset (`ChineseDataset`)
+- Parses `annotations.csv` (`file_name, width, height, x1, y1, x2, y2, category`).
+- Resolves images inside `images/` directory.
+- Implements stratified 3-way partitioning (`70% train`, `15% validation`, `15% test`) across 58 categories.
+
+#### D. Unified Dataset Wrapper (`TrafficSignDataset` & `get_dataset`)
+- Standardized factory function instantiating any of the 3 datasets via a simple string identifier (`"german"`, `"belgian"`, or `"chinese"`).
+
+---
+
+### 3. Data Transformations & Augmentation (`get_transforms`)
+- **Training Pipeline**:
+  - `Resize(img_size)` (default 32x32 or 48x48)
+  - `RandomRotation(±15°)`
+  - `ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2)`
+  - `RandomAffine(translation=8%, scale=0.95-1.05)`
+  - `ToTensor()`
+  - `Normalize(mean, std)`
+- **Validation & Testing Pipeline**:
+  - `Resize(img_size)`
+  - `ToTensor()`
+  - `Normalize(mean, std)`
+
+---
+
+### 4. Unified DataLoader Factory (`get_dataloaders`)
+Single-entry point for training scripts returning standard PyTorch `(train_loader, val_loader, test_loader)`:
+
+```python
+train_loader, val_loader, test_loader = get_dataloaders(
+    dataset_name="german",  # or "belgian", "chinese"
+    batch_size=64,
+    img_size=(32, 32),
+    val_split=0.2,
+    num_workers=0,
+)
+```
+
+---
+
+## Verification & Validation Results
+
+The entire pipeline was verified via self-test execution with `.venv\Scripts\python.exe data/dataset.py`:
+
+```
+=================================================================
+Multi-Dataset Pipeline Test: German, Belgian, and Chinese
+=================================================================
+
+>>> Testing German (GTSRB) Pipeline (Target Classes: 43)
+  Train samples:      31,367
+  Validation samples: 7,842
+  Test samples:       12,630
+  Total samples:      51,839
+  Batch image shape:  torch.Size([32, 3, 32, 32]) (Expected: [32, 3, 32, 32])
+  Batch label shape:  torch.Size([32]) (Expected: [32])
+  Label range:        min=1, max=40 (max < 43)
+  Model output shape: torch.Size([32, 43]) (Expected: [32, 43])
+  => German (GTSRB) PASS!
+
+>>> Testing Belgian (BelgiumTSC) Pipeline (Target Classes: 62)
+  Train samples:      3,672
+  Validation samples: 919
+  Test samples:       2,534
+  Total samples:      7,125
+  Batch image shape:  torch.Size([32, 3, 32, 32]) (Expected: [32, 3, 32, 32])
+  Batch label shape:  torch.Size([32]) (Expected: [32])
+  Label range:        min=1, max=61 (max < 62)
+  Model output shape: torch.Size([32, 62]) (Expected: [32, 62])
+  => Belgian (BelgiumTSC) PASS!
+
+>>> Testing Chinese (CTSD) Pipeline (Target Classes: 58)
+  Train samples:      4,006
+  Validation samples: 1,233
+  Test samples:       925
+  Total samples:      6,164
+  Batch image shape:  torch.Size([32, 3, 32, 32]) (Expected: [32, 3, 32, 32])
+  Batch label shape:  torch.Size([32]) (Expected: [32])
+  Label range:        min=3, max=56 (max < 58)
+  Model output shape: torch.Size([32, 58]) (Expected: [32, 58])
+  => Chinese (CTSD) PASS!
+
+=================================================================
+All 3 datasets successfully verified!
+=================================================================
+```
+
+---
+
+## Example Usage in Model Training
+
+```python
+from data import get_dataloaders
+from models.model import get_model
+from config import DATASET_NUM_CLASSES
+
+# 1. Choose benchmark
+benchmark = "chinese"  # "german" | "belgian" | "chinese"
+num_classes = DATASET_NUM_CLASSES[benchmark]
+
+# 2. Get DataLoaders
+train_loader, val_loader, test_loader = get_dataloaders(
+    dataset_name=benchmark,
+    batch_size=64,
+    img_size=(32, 32),
+    val_split=0.2,
+)
+
+# 3. Instantiate model matching target class count
+model = get_model(num_classes=num_classes)
+
+# 4. Train loop
+for images, labels in train_loader:
+    logits = model(images)  # Output tensor shape: [64, num_classes]
+    # loss = criterion(logits, labels)
+    # ...
+```
