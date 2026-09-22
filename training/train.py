@@ -9,7 +9,7 @@ import argparse
 import sys
 import time
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Union
 
 # Add project root to sys.path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -33,6 +33,7 @@ from config import (
     WEIGHT_DECAY,
 )
 from data.dataset import get_dataloaders
+from evaluation.confusion_matrix import compute_and_save_confusion_matrix
 from models.RawCNN import get_model
 
 
@@ -181,12 +182,15 @@ def evaluate(
     criterion: nn.Module,
     device: torch.device,
     desc: str = "Evaluating",
-) -> Tuple[float, float]:
+    return_preds: bool = False,
+) -> Union[Tuple[float, float], Tuple[float, float, list, list]]:
     """Evaluate the model on validation or test set."""
     model.eval()
     running_loss = 0.0
     correct = 0
     total = 0
+    all_preds = []
+    all_targets = []
 
     pbar = tqdm(loader, desc=desc, leave=False)
     for images, targets in pbar:
@@ -199,8 +203,15 @@ def evaluate(
         total += targets.size(0)
         correct += predicted.eq(targets).sum().item()
 
+        if return_preds:
+            all_preds.extend(predicted.cpu().tolist())
+            all_targets.extend(targets.cpu().tolist())
+
     eval_loss = running_loss / total
     eval_acc = 100.0 * correct / total
+
+    if return_preds:
+        return eval_loss, eval_acc, all_targets, all_preds
     return eval_loss, eval_acc
 
 
@@ -319,13 +330,24 @@ def run_training(args):
     print(f"Training completed in {format_time(total_duration)}.")
     print(f"Best Validation Accuracy: {best_val_acc:.2f}%")
 
-    # 7. Evaluate best checkpoint on test set
+    # 7. Evaluate best checkpoint on test set & Generate Confusion Matrix
     if save_path.exists():
         print("\nLoading best model checkpoint for Test Set Evaluation...")
         checkpoint = torch.load(save_path, map_location=DEVICE)
         model.load_state_dict(checkpoint["model_state_dict"])
-        test_loss, test_acc = evaluate(model, test_loader, criterion, DEVICE, desc="Testing")
+        test_loss, test_acc, y_true, y_pred = evaluate(
+            model, test_loader, criterion, DEVICE, desc="Testing", return_preds=True
+        )
         print(f"Final Test Loss: {test_loss:.4f} | Final Test Accuracy: {test_acc:.2f}%")
+
+        # Automatically compute and store confusion matrices
+        compute_and_save_confusion_matrix(
+            y_true=y_true,
+            y_pred=y_pred,
+            model_name=args.model_type,
+            dataset_name=args.dataset,
+            split="test",
+        )
     print("=" * 65)
 
 
