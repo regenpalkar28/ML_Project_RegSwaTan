@@ -923,7 +923,7 @@ def get_dataloaders(
 # Self-Test and Validation Block
 # ==============================================================================
 if __name__ == "__main__":
-    from models.model import get_model
+    from models.RawCNN import get_model
 
     datasets_to_test = [
         ("German (GTSRB)", "german", NUM_CLASSES_GERMAN),

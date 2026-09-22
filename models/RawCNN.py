@@ -96,10 +96,10 @@ def get_model(num_classes: int = 43, model_type: str = "basic_cnn", in_channels:
     Returns:
         nn.Module: Instantiated PyTorch model.
     """
-    if model_type.lower() == "basic_cnn":
+    if model_type.lower() in ["basic_cnn", "raw_cnn", "rawcnn"]:
         return BasicSignClassifier(num_classes=num_classes, in_channels=in_channels)
     else:
-        raise ValueError(f"Unknown model_type '{model_type}'. Supported types: ['basic_cnn']")
+        raise ValueError(f"Unknown model_type '{model_type}'. Supported types: ['basic_cnn', 'raw_cnn']")
 
 
 if __name__ == "__main__":

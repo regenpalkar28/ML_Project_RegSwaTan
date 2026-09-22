@@ -1,3 +1,3 @@
-from .model import BasicSignClassifier, get_model
+from .RawCNN import BasicSignClassifier, get_model
 
 __all__ = ["BasicSignClassifier", "get_model"]

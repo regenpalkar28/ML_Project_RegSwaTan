@@ -156,7 +156,7 @@ All 3 datasets successfully verified!
 
 ```python
 from data import get_dataloaders
-from models.model import get_model
+from models.RawCNN import get_model
 from config import DATASET_NUM_CLASSES
 
 # 1. Choose benchmark
