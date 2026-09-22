@@ -84,22 +84,40 @@ class BasicSignClassifier(nn.Module):
         return logits
 
 
-def get_model(num_classes: int = 43, model_type: str = "basic_cnn", in_channels: int = 3) -> nn.Module:
+def get_model(
+    num_classes: int = 43,
+    model_type: str = "basic_cnn",
+    in_channels: int = 3,
+    **kwargs,
+) -> nn.Module:
     """
     Factory function to instantiate the model.
 
     Args:
         num_classes (int): Number of target traffic sign classes (default: 43 for GTSRB).
-        model_type (str): Type of model architecture ('basic_cnn').
+        model_type (str): Type of model architecture ('basic_cnn', 'vgg19', 'vgg19_bn').
         in_channels (int): Number of input image channels (3 for RGB).
+        **kwargs: Additional parameters forwarded to specific models (e.g., pretrained, compact_head).
 
     Returns:
         nn.Module: Instantiated PyTorch model.
     """
-    if model_type.lower() == "basic_cnn":
-        return BasicSignClassifier(num_classes=num_classes, in_channels=in_channels)
+    mtype = model_type.lower()
+    if mtype in ["basic_cnn", "cnn"]:
+        return BasicSignClassifier(num_classes=num_classes, in_channels=in_channels, **kwargs)
+    elif mtype in ["vgg19", "vgg19_bn"]:
+        from .vgg19 import get_vgg19_model
+        use_bn = kwargs.pop("use_batch_norm", (mtype == "vgg19_bn"))
+        return get_vgg19_model(
+            num_classes=num_classes,
+            use_batch_norm=use_bn,
+            in_channels=in_channels,
+            **kwargs,
+        )
     else:
-        raise ValueError(f"Unknown model_type '{model_type}'. Supported types: ['basic_cnn']")
+        raise ValueError(
+            f"Unknown model_type '{model_type}'. Supported types: ['basic_cnn', 'vgg19', 'vgg19_bn']"
+        )
 
 
 if __name__ == "__main__":

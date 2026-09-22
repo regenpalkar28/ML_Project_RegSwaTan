@@ -217,13 +217,27 @@ class GTSRBDataset(Dataset):
         candidates = []
         if root_dir is not None:
             p = Path(root_dir).resolve()
-            candidates.extend([p, p / "German Dataset", p / "data" / "German Dataset"])
+            candidates.extend([
+                p,
+                p / "German Dataset",
+                p / "data" / "German Dataset",
+                p / "gtsrb",
+                p / "GTSRB",
+                p / "data",
+            ])
 
         candidates.extend(
             [
                 Path(GERMAN_DATASET_DIR).resolve(),
                 Path(__file__).resolve().parent / "German Dataset",
                 Path(__file__).resolve().parent.parent / "data" / "German Dataset",
+                Path(__file__).resolve().parent,  # data/ directory directly
+                Path(__file__).resolve().parent / "GTSRB",
+                Path(__file__).resolve().parent / "gtsrb",
+                Path("/content/data/German Dataset"),
+                Path("/content/German Dataset"),
+                Path("/content/GTSRB"),
+                Path("/content/data"),
             ]
         )
 
@@ -232,7 +246,10 @@ class GTSRBDataset(Dataset):
                 return candidate
 
         raise FileNotFoundError(
-            f"Could not locate GTSRB dataset directory. Checked paths: {[str(c) for c in candidates]}"
+            f"Could not locate GTSRB dataset directory (Train.csv not found).\n"
+            f"Checked paths:\n" + "\n".join(f" - {c}" for c in candidates) + "\n"
+            f"Please ensure the GTSRB dataset is unzipped and contains 'Train.csv' inside one of these folders, "
+            f"or specify --data_dir '<path_to_folder_with_Train.csv>' in your training command."
         )
 
     def _load_split_df(self) -> pd.DataFrame:
