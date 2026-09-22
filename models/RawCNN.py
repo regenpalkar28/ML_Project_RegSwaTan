@@ -13,7 +13,13 @@ class BasicSignClassifier(nn.Module):
     - Fully connected classification head with Dropout regularization
     """
 
-    def __init__(self, num_classes: int = 43, in_channels: int = 3, dropout_rate: float = 0.3):
+    def __init__(
+        self,
+        num_classes: int = 43,
+        in_channels: int = 3,
+        dropout_rate: float = 0.3,
+        **kwargs,
+    ):
         super(BasicSignClassifier, self).__init__()
         
         self.num_classes = num_classes
@@ -104,7 +110,12 @@ def get_model(
     """
     mtype = model_type.lower()
     if mtype in ["basic_cnn", "cnn", "raw_cnn", "rawcnn"]:
-        return BasicSignClassifier(num_classes=num_classes, in_channels=in_channels, **kwargs)
+        dropout_rate = kwargs.pop("dropout_rate", 0.3)
+        return BasicSignClassifier(
+            num_classes=num_classes,
+            in_channels=in_channels,
+            dropout_rate=dropout_rate,
+        )
     elif mtype in ["vgg19", "vgg19_bn"]:
         from .vgg19 import get_vgg19_model
         use_bn = kwargs.pop("use_batch_norm", (mtype == "vgg19_bn"))
