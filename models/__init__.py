@@ -1,5 +1,8 @@
-from .model import BasicSignClassifier, get_model
-from .vgg19 import VGG19SignClassifier, get_vgg19_model
+from .RawCNN import BasicSignClassifier, get_model
 
-__all__ = ["BasicSignClassifier", "VGG19SignClassifier", "get_model", "get_vgg19_model"]
+try:
+    from .VGG19 import VGG19SignClassifier, get_vgg19_model
+    __all__ = ["BasicSignClassifier", "VGG19SignClassifier", "get_model", "get_vgg19_model"]
+except (ImportError, AttributeError):
+    __all__ = ["BasicSignClassifier", "get_model"]
 

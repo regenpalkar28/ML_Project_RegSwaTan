@@ -103,7 +103,7 @@ def get_model(
         nn.Module: Instantiated PyTorch model.
     """
     mtype = model_type.lower()
-    if mtype in ["basic_cnn", "cnn"]:
+    if mtype in ["basic_cnn", "cnn", "raw_cnn", "rawcnn"]:
         return BasicSignClassifier(num_classes=num_classes, in_channels=in_channels, **kwargs)
     elif mtype in ["vgg19", "vgg19_bn"]:
         from .vgg19 import get_vgg19_model
