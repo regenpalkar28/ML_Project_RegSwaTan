@@ -133,7 +133,7 @@ def get_vgg19_model(
         num_classes (int): Number of target classes.
         pretrained (bool): Load ImageNet pre-trained weights.
         use_batch_norm (bool): Use Batch Normalization variant (vgg19_bn).
-        in_channels (int): Number of input channels (3 for RGB).
+        in_channels (int): Input channels (3 for RGB).
         compact_head (bool): Use lightweight classification head suitable for 32x32/48x48.
 
     Returns:

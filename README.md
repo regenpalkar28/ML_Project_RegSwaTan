@@ -20,7 +20,7 @@ ML_Project_RegSwaTan/
 │   └── Chinese Dataset/      # CTSD annotations.csv and images/
 ├── models/
 │   ├── RawCNN.py             # Basic Convolutional Neural Network baseline
-│   ├── VGG19.py              # VGG19 / VGG19-BN architectures
+│   ├── vgg19_model.py        # VGG19 / VGG19-BN architectures
 │   └── __init__.py           # Model factory and exports
 ├── training/
 │   ├── train.py              # Training loop with time estimation and checkpointing
@@ -66,24 +66,63 @@ pip install -r requirements.txt
 
 Use [`training/train.py`](file:///c:/Users/Regen/Machine%20Learning/ML_Project_RegSwaTan/training/train.py) to train models. The script automatically estimates total training time before execution and prompts for confirmation.
 
-### 1. Training Commands by Dataset
+### 1. Training Baseline CNN (`raw_cnn`)
 
 #### A. Train on German Dataset (GTSRB — 43 Classes)
 ```powershell
-.venv\Scripts\python.exe training/train.py --dataset german --model_type raw_cnn --epochs 30 --batch_size 64 --lr 0.001
+python training/train.py --dataset german --model_type raw_cnn --epochs 30 --batch_size 64 --lr 0.001
 ```
 
 #### B. Train on Belgian Dataset (BelgiumTSC — 62 Classes)
 ```powershell
-.venv\Scripts\python.exe training/train.py --dataset belgian --model_type raw_cnn --epochs 30 --batch_size 64 --lr 0.001
+python training/train.py --dataset belgian --model_type raw_cnn --epochs 30 --batch_size 64 --lr 0.001
 ```
 
 #### C. Train on Chinese Dataset (CTSD — 58 Classes)
 ```powershell
-.venv\Scripts\python.exe training/train.py --dataset chinese --model_type raw_cnn --epochs 30 --batch_size 64 --lr 0.001
+python training/train.py --dataset chinese --model_type raw_cnn --epochs 30 --batch_size 64 --lr 0.001
 ```
 
-### 2. Key Training Flags
+---
+
+### 2. Training VGG19 & VGG19-BN
+
+The VGG19 pipeline in [`models/vgg19_model.py`](file:///c:/Users/Regen/Machine%20Learning/ML_Project_RegSwaTan/models/vgg19_model.py) supports deep 19-layer architectures with Batch Normalization (`vgg19_bn`), optional ImageNet pre-training (`--pretrained`), and optimized classification heads (`--compact_head`).
+
+> [!NOTE]
+> Before launching the full training loop, `train.py` runs benchmark sample batches on your compute device (CPU/GPU) to estimate the time required per epoch and total training duration, then prompts:
+> ```
+> Do you wish to proceed with training? [Y/n]: 
+> ```
+> Press **Enter** or type `y` to start training, or pass `-y` / `--yes` to skip the prompt for automated runs.
+
+#### A. Recommended: Train VGG19 with Batch Normalization (German GTSRB)
+```powershell
+python training/train.py --model_type vgg19_bn --dataset german --epochs 30 --batch_size 64
+```
+
+#### B. Train Standard VGG19 (without BatchNorm)
+```powershell
+python training/train.py --model_type vgg19 --dataset german --epochs 30 --batch_size 64
+```
+
+#### C. Transfer Learning with Pretrained ImageNet Weights
+```powershell
+python training/train.py --model_type vgg19_bn --dataset german --pretrained --epochs 25 --batch_size 64 --lr 0.0001
+```
+
+#### D. Train VGG19 on Belgian and Chinese Benchmarks
+```powershell
+# Belgian Dataset (62 classes)
+python training/train.py --model_type vgg19_bn --dataset belgian --epochs 30 --batch_size 64
+
+# Chinese Dataset (58 classes)
+python training/train.py --model_type vgg19_bn --dataset chinese --epochs 30 --batch_size 64
+```
+
+---
+
+### 3. Key Training Flags
 
 | Argument | Default | Description |
 | :--- | :--- | :--- |
@@ -95,7 +134,9 @@ Use [`training/train.py`](file:///c:/Users/Regen/Machine%20Learning/ML_Project_R
 | `--weight_decay`| `0.0001`| L2 weight regularization penalty. |
 | `--img_size` | `32 32` | Input image dimensions (Height Width). |
 | `--num_workers` | `0` | Number of DataLoader workers (`0` recommended on Windows). |
-| `-y`, `--yes` | `False` | Skip confirmation prompt and proceed immediately. |
+| `--pretrained` | `False` | Initialize backbone with ImageNet pre-trained weights. |
+| `--compact_head`| `True` | Use efficient classifier head (~21M params vs ~140M params). |
+| `-y`, `--yes` | `False` | Skip interactive prompt and proceed immediately with training. |
 
 ---
 
@@ -106,20 +147,23 @@ Evaluate any saved `.pth` checkpoint using [`evaluation/evaluate.py`](file:///c:
 ### 1. Evaluate Saved Checkpoints on Test Set
 
 ```powershell
-# Evaluate German Checkpoint
-.venv\Scripts\python.exe evaluation/evaluate.py --checkpoint checkpoints/raw_cnn_german_best.pth --dataset german --split test
+# Evaluate Baseline CNN Checkpoint
+python evaluation/evaluate.py --checkpoint checkpoints/raw_cnn_german_best.pth --dataset german --model_type raw_cnn --split test
+
+# Evaluate VGG19-BN Checkpoint
+python evaluation/evaluate.py --checkpoint checkpoints/vgg19_bn_german_best.pth --dataset german --model_type vgg19_bn --split test
 
 # Evaluate Belgian Checkpoint
-.venv\Scripts\python.exe evaluation/evaluate.py --checkpoint checkpoints/raw_cnn_belgian_best.pth --dataset belgian --split test
+python evaluation/evaluate.py --checkpoint checkpoints/vgg19_bn_belgian_best.pth --dataset belgian --model_type vgg19_bn --split test
 
 # Evaluate Chinese Checkpoint
-.venv\Scripts\python.exe evaluation/evaluate.py --checkpoint checkpoints/raw_cnn_chinese_best.pth --dataset chinese --split test
+python evaluation/evaluate.py --checkpoint checkpoints/vgg19_bn_chinese_best.pth --dataset chinese --model_type vgg19_bn --split test
 ```
 
 ### 2. Standalone Confusion Matrix Generator
 
 ```powershell
-.venv\Scripts\python.exe evaluation/confusion_matrix.py --checkpoint checkpoints/raw_cnn_german_best.pth --dataset german --split test
+python evaluation/confusion_matrix.py --checkpoint checkpoints/vgg19_bn_german_best.pth --dataset german --model_type vgg19_bn --split test
 ```
 
 ---

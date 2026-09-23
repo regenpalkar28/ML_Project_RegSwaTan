@@ -272,6 +272,8 @@ def run_training(args):
     print("  TRAINING TIME ESTIMATION SUMMARY")
     print("-" * 65)
     print(f"  Compute Device:       {DEVICE}")
+    print(f"  Model Architecture:   {args.model_type.upper()}")
+    print(f"  Target Dataset:       {args.dataset.upper()} ({num_classes} classes)")
     print(f"  Epochs Configured:    {args.epochs}")
     print(f"  Batch Size:           {args.batch_size}")
     print(f"  Estimated / Epoch:    {format_time(est_epoch_time)}")
@@ -281,7 +283,7 @@ def run_training(args):
     # 5. Interactive Confirmation Check
     if not args.yes:
         try:
-            proceed = input("\nDo you want to proceed with training? [Y/n]: ").strip().lower()
+            proceed = input("\nDo you wish to proceed with training? [Y/n]: ").strip().lower()
             if proceed not in ["y", "yes", ""]:
                 print("Training aborted by user.")
                 return

@@ -117,7 +117,7 @@ def get_model(
             dropout_rate=dropout_rate,
         )
     elif mtype in ["vgg19", "vgg19_bn"]:
-        from .vgg19 import get_vgg19_model
+        from .vgg19_model import get_vgg19_model
         use_bn = kwargs.pop("use_batch_norm", (mtype == "vgg19_bn"))
         return get_vgg19_model(
             num_classes=num_classes,
