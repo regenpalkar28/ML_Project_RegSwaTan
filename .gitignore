@@ -115,3 +115,4 @@ wandb/
 runs/
 logs/
 *.tfevents.*
+models/VGG19.py
