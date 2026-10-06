@@ -329,7 +329,20 @@ def evaluate_checkpoint_and_generate_cm(
     if not checkpoint_path.exists():
         raise FileNotFoundError(f"Checkpoint not found at: {checkpoint_path}")
 
-    num_classes = DATASET_NUM_CLASSES.get(dataset_name.lower(), 43)
+    # Load Checkpoint & Auto-detect metadata if available
+    checkpoint = torch.load(checkpoint_path, map_location=DEVICE)
+    if isinstance(checkpoint, dict):
+        saved_model_type = checkpoint.get("model_type")
+        if saved_model_type and saved_model_type != model_type:
+            print(f"[Info] Auto-detected model_type='{saved_model_type}' from checkpoint (overriding '{model_type}').")
+            model_type = saved_model_type
+        if "num_classes" in checkpoint:
+            num_classes = checkpoint["num_classes"]
+        state_dict = checkpoint.get("model_state_dict", checkpoint)
+    else:
+        state_dict = checkpoint
+
+    num_classes = DATASET_NUM_CLASSES.get(dataset_name.lower(), num_classes)
 
     # DataLoaders
     _, val_loader, test_loader = get_dataloaders(
@@ -342,8 +355,6 @@ def evaluate_checkpoint_and_generate_cm(
 
     # Load Model
     model = get_model(num_classes=num_classes, model_type=model_type).to(DEVICE)
-    checkpoint = torch.load(checkpoint_path, map_location=DEVICE)
-    state_dict = checkpoint.get("model_state_dict", checkpoint)
     model.load_state_dict(state_dict)
     model.eval()
 
