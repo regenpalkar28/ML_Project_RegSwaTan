@@ -1,0 +1,138 @@
+{
+    "model": "raw_cnn",
+    "dataset": "german",
+    "split": "test",
+    "num_classes": 43,
+    "total_samples": 200,
+    "overall_accuracy": 0.015,
+    "macro_avg_f1": 0.0114,
+    "weighted_avg_f1": 0.011,
+    "top_confused_pairs": [
+        {
+            "true_class_id": 3,
+            "true_class_label": "3: Speed limit (60km/h)",
+            "pred_class_id": 13,
+            "pred_class_label": "13: Yield",
+            "count": 4,
+            "error_rate_for_class": 0.6667
+        },
+        {
+            "true_class_id": 2,
+            "true_class_label": "2: Speed limit (50km/h)",
+            "pred_class_id": 9,
+            "pred_class_label": "9: No passing",
+            "count": 2,
+            "error_rate_for_class": 0.2222
+        },
+        {
+            "true_class_id": 12,
+            "true_class_label": "12: Priority road",
+            "pred_class_id": 2,
+            "pred_class_label": "2: Speed limit (50km/h)",
+            "count": 2,
+            "error_rate_for_class": 0.1818
+        },
+        {
+            "true_class_id": 12,
+            "true_class_label": "12: Priority road",
+            "pred_class_id": 10,
+            "pred_class_label": "10: No passing for vehicles over 3.5 metric tons",
+            "count": 2,
+            "error_rate_for_class": 0.1818
+        },
+        {
+            "true_class_id": 12,
+            "true_class_label": "12: Priority road",
+            "pred_class_id": 18,
+            "pred_class_label": "18: General caution",
+            "count": 2,
+            "error_rate_for_class": 0.1818
+        },
+        {
+            "true_class_id": 16,
+            "true_class_label": "16: Vehicles over 3.5 metric tons prohibited",
+            "pred_class_id": 42,
+            "pred_class_label": "42: End of no passing by vehicles over 3.5 metric tons",
+            "count": 2,
+            "error_rate_for_class": 0.3333
+        },
+        {
+            "true_class_id": 22,
+            "true_class_label": "22: Bumpy road",
+            "pred_class_id": 2,
+            "pred_class_label": "2: Speed limit (50km/h)",
+            "count": 2,
+            "error_rate_for_class": 0.3333
+        },
+        {
+            "true_class_id": 28,
+            "true_class_label": "28: Children crossing",
+            "pred_class_id": 10,
+            "pred_class_label": "10: No passing for vehicles over 3.5 metric tons",
+            "count": 2,
+            "error_rate_for_class": 0.3333
+        },
+        {
+            "true_class_id": 31,
+            "true_class_label": "31: Wild animals crossing",
+            "pred_class_id": 4,
+            "pred_class_label": "4: Speed limit (70km/h)",
+            "count": 2,
+            "error_rate_for_class": 0.25
+        },
+        {
+            "true_class_id": 34,
+            "true_class_label": "34: Turn left ahead",
+            "pred_class_id": 8,
+            "pred_class_label": "8: Speed limit (120km/h)",
+            "count": 2,
+            "error_rate_for_class": 0.2857
+        },
+        {
+            "true_class_id": 42,
+            "true_class_label": "42: End of no passing by vehicles over 3.5 metric tons",
+            "pred_class_id": 6,
+            "pred_class_label": "6: End of speed limit (80km/h)",
+            "count": 2,
+            "error_rate_for_class": 1.0
+        },
+        {
+            "true_class_id": 0,
+            "true_class_label": "0: Speed limit (20km/h)",
+            "pred_class_id": 33,
+            "pred_class_label": "33: Turn right ahead",
+            "count": 1,
+            "error_rate_for_class": 1.0
+        },
+        {
+            "true_class_id": 1,
+            "true_class_label": "1: Speed limit (30km/h)",
+            "pred_class_id": 15,
+            "pred_class_label": "15: No vehicles",
+            "count": 1,
+            "error_rate_for_class": 0.3333
+        },
+        {
+            "true_class_id": 1,
+            "true_class_label": "1: Speed limit (30km/h)",
+            "pred_class_id": 22,
+            "pred_class_label": "22: Bumpy road",
+            "count": 1,
+            "error_rate_for_class": 0.3333
+        },
+        {
+            "true_class_id": 1,
+            "true_class_label": "1: Speed limit (30km/h)",
+            "pred_class_id": 38,
+            "pred_class_label": "38: Keep right",
+            "count": 1,
+            "error_rate_for_class": 0.3333
+        }
+    ],
+    "saved_files": {
+        "raw_csv": "raw_cnn_german_test_cm_raw.csv",
+        "normalized_csv": "raw_cnn_german_test_cm_norm.csv",
+        "raw_heatmap_png": "raw_cnn_german_test_cm.png",
+        "normalized_heatmap_png": "raw_cnn_german_test_cm_normalized.png"
+    }
+}

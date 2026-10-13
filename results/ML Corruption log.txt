@@ -1,0 +1,127 @@
+(.venv) PS C:\Users\Regen\Machine Learning\ML_Project_RegSwaTan> python experiments/run_experiments.py --checkpoint "checkpoints/vgg19_bn_german_best.pth" --model_type vgg19_bn --dataset german
+>> 
+======================================================================
+  TRAFFIC SIGN RECOGNITION: ROBUSTNESS BENCHMARK (70 CONDITIONS)
+======================================================================
+Model Architecture: VGG19_BN
+Target Dataset:     GERMAN
+Device:             cpu
+Batch Size:         64
+======================================================================
+Loading checkpoint: vgg19_bn_german_best.pth
+
+[Phase 1/2] Evaluating Clean Baseline Test Set...
+----------------------------------------------------------------------
+CLEAN BASELINE PERFORMANCE:
+  Accuracy:    98.79%
+  Macro F1:    0.9765
+  Weighted F1: 0.9879
+  Loss:        0.0715
+----------------------------------------------------------------------
+
+
+[Phase 2/2] Running 70 Corrupted Test Conditions (14 Corruptions x 5 Severities)...
+
+>>> Corruption: GAUSSIAN_NOISE
+  Sev 1: Acc=95.30% (Drop: - 3.48%) | Macro F1=0.9248 | Loss=0.2914
+  Sev 2: Acc=90.63% (Drop: - 8.16%) | Macro F1=0.8623 | Loss=0.6640
+  Sev 3: Acc=84.51% (Drop: -14.28%) | Macro F1=0.7907 | Loss=1.2590
+  Sev 4: Acc=78.85% (Drop: -19.94%) | Macro F1=0.7329 | Loss=1.8890
+  Sev 5: Acc=68.33% (Drop: -30.46%) | Macro F1=0.6279 | Loss=3.0563
+
+>>> Corruption: SHOT_NOISE
+  Sev 1: Acc=97.88% (Drop: - 0.91%) | Macro F1=0.9611 | Loss=0.1219
+  Sev 2: Acc=95.79% (Drop: - 3.00%) | Macro F1=0.9343 | Loss=0.2654
+  Sev 3: Acc=91.94% (Drop: - 6.85%) | Macro F1=0.8814 | Loss=0.5180
+  Sev 4: Acc=84.01% (Drop: -14.77%) | Macro F1=0.7802 | Loss=1.1445
+  Sev 5: Acc=68.90% (Drop: -29.89%) | Macro F1=0.6132 | Loss=2.5637
+
+>>> Corruption: IMPULSE_NOISE
+  Sev 1: Acc=94.68% (Drop: - 4.11%) | Macro F1=0.9163 | Loss=0.3366
+  Sev 2: Acc=87.85% (Drop: -10.94%) | Macro F1=0.8283 | Loss=0.7741                
+  Sev 3: Acc=73.06% (Drop: -25.73%) | Macro F1=0.6618 | Loss=2.0249
+  Sev 4: Acc=56.38% (Drop: -42.41%) | Macro F1=0.5009 | Loss=3.8005
+  Sev 1: Acc=97.88% (Drop: - 0.91%) | Macro F1=0.9611 | Loss=0.1219        
+  Sev 2: Acc=95.79% (Drop: - 3.00%) | Macro F1=0.9343 | Loss=0.2654        ption: DEFOCUS_BLUR
+  Sev 3: Acc=91.94% (Drop: - 6.85%) | Macro F1=0.8814 | Loss=0.5180        
+  Sev 4: Acc=84.01% (Drop: -14.77%) | Macro F1=0.7802 | Loss=1.1445        
+  Sev 5: Acc=68.90% (Drop: -29.89%) | Macro F1=0.6132 | Loss=2.5637        
+
+>>> Corruption: IMPULSE_NOISE
+  Sev 1: Acc=94.68% (Drop: - 4.11%) | Macro F1=0.9163 | Loss=0.3366        
+  Sev 2: Acc=87.85% (Drop: -10.94%) | Macro F1=0.8283 | Loss=0.7741        ption: MOTION_BLUR
+  Sev 3: Acc=73.06% (Drop: -25.73%) | Macro F1=0.6618 | Loss=2.0249        
+  Sev 4: Acc=56.38% (Drop: -42.41%) | Macro F1=0.5009 | Loss=3.8005        
+  Sev 5: Acc=41.78% (Drop: -57.01%) | Macro F1=0.3765 | Loss=5.5129        
+
+  Sev 2: Acc=95.79% (Drop: - 3.00%) | Macro F1=0.9343 | Loss=0.2654      : Acc=98.61% (Drop: - 0.17%) | Macro F1=0.9740 | Loss=0.082
+  Sev 3: Acc=91.94% (Drop: - 6.85%) | Macro F1=0.8814 | Loss=0.5180      : Acc=97.81% (Drop: - 0.98%) | Macro F1=0.9633 | Loss=0.140
+  Sev 4: Acc=84.01% (Drop: -14.77%) | Macro F1=0.7802 | Loss=1.1445      : Acc=95.86% (Drop: - 2.93%) | Macro F1=0.9375 | Loss=0.256
+  Sev 5: Acc=68.90% (Drop: -29.89%) | Macro F1=0.6132 | Loss=2.5637      : Acc=84.48% (Drop: -14.31%) | Macro F1=0.7760 | Loss=1.017
+
+>>> Corruption: IMPULSE_NOISE
+  Sev 1: Acc=94.68% (Drop: - 4.11%) | Macro F1=0.9163 | Loss=0.3366      
+  Sev 2: Acc=87.85% (Drop: -10.94%) | Macro F1=0.8283 | Loss=0.7741      : Acc=97.52% (Drop: - 1.27%) | Macro F1=0.9592 | Loss=0.147
+  Sev 3: Acc=73.06% (Drop: -25.73%) | Macro F1=0.6618 | Loss=2.0249      : Acc=93.40% (Drop: - 5.38%) | Macro F1=0.8863 | Loss=0.429
+  Sev 4: Acc=56.38% (Drop: -42.41%) | Macro F1=0.5009 | Loss=3.8005      : Acc=82.68% (Drop: -16.10%) | Macro F1=0.7348 | Loss=1.115
+  Sev 5: Acc=41.78% (Drop: -57.01%) | Macro F1=0.3765 | Loss=5.5129      : Acc=67.86% (Drop: -30.93%) | Macro F1=0.5687 | Loss=2.309
+  Sev 2: Acc=95.79% (Drop: - 3.00%) | Macro F1=0.9343 | Loss=0.2654     rruption: DEFOCUS_BLUR
+  Sev 3: Acc=91.94% (Drop: - 6.85%) | Macro F1=0.8814 | Loss=0.5180      
+  Sev 4: Acc=84.01% (Drop: -14.77%) | Macro F1=0.7802 | Loss=1.1445      : Acc=98.61% (Drop: - 0.17%) | Macro F1=0.9757 | Loss=0.079
+  Sev 5: Acc=68.90% (Drop: -29.89%) | Macro F1=0.6132 | Loss=2.5637       zoom_blur (Sev 2):  91%|██████████████▌ | 180/198 [03:56<0
+
+>>> Corruption: IMPULSE_NOISE
+
+
+
+
+>>> Corruption: DEFOCUS_BLUR
+>>> Corruption: DEFOCUS_BLUR
+  Sev 1: Acc=98.61% (Drop: - 0.17%) | Macro F1=0.9740 | Loss=0.0828        
+  Sev 2: Acc=97.81% (Drop: - 0.98%) | Macro F1=0.9633 | Loss=0.1405        
+  Sev 3: Acc=95.86% (Drop: - 2.93%) | Macro F1=0.9375 | Loss=0.2564        
+  Sev 4: Acc=84.48% (Drop: -14.31%) | Macro F1=0.7760 | Loss=1.0178        
+  Sev 5: Acc=60.55% (Drop: -38.24%) | Macro F1=0.4968 | Loss=3.0689        
+
+>>> Corruption: MOTION_BLUR
+  Sev 1: Acc=97.52% (Drop: - 1.27%) | Macro F1=0.9592 | Loss=0.1479        
+  Sev 2: Acc=93.40% (Drop: - 5.38%) | Macro F1=0.8863 | Loss=0.4291    Sev 5: Acc=60.55% (Drop: -38.24%) | Macro F1=0.4968 | Loss=3.0689        3: Acc=82.68% (Drop: -16.10%) | Macro F1=0.7348 | Loss=1.1154  
+
+>>> Corruption: MOTION_BLUR
+  Sev 1: Acc=97.52% (Drop: - 1.27%) | Macro F1=0.9592 | Loss=0.1479        5: Acc=45.74% (Drop: -53.05%) | Macro F1=0.3296 | Loss=4.8251  
+  Sev 2: Acc=93.40% (Drop: - 5.38%) | Macro F1=0.8863 | Loss=0.4291       
+  Sev 3: Acc=82.68% (Drop: -16.10%) | Macro F1=0.7348 | Loss=1.1154  
+
+>>> Corruption: MOTION_BLUR
+  Sev 1: Acc=97.52% (Drop: - 1.27%) | Macro F1=0.9592 | Loss=0.1479    Sev 5: Acc=45.74% (Drop: -53.05%) | Macro F1=0.3296 | Loss=4.8251  
+  Sev 2: Acc=93.40% (Drop: - 5.38%) | Macro F1=0.8863 | Loss=0.4291   
+
+>>> Corruption: MOTION_BLUR
+  Sev 1: Acc=97.52% (Drop: - 1.27%) | Macro F1=0.9592 | Loss=0.1479  
+  Sev 2: Acc=93.40% (Drop: - 5.38%) | Macro F1=0.8863 | Loss=0.4291  
+  Sev 3: Acc=82.68% (Drop: -16.10%) | Macro F1=0.7348 | Loss=1.1154  
+>>> Corruption: MOTION_BLUR
+  Sev 1: Acc=97.52% (Drop: - 1.27%) | Macro F1=0.9592 | Loss=0.1479     Sev 4: Acc=67.86% (Drop: -30.93%) | Macro F1=0.5687 | Loss=2.3093   
+  Sev 5: Acc=45.74% (Drop: -53.05%) | Macro F1=0.3296 | Loss=4.8251   
+  Sev 4: Acc=67.86% (Drop: -30.93%) | Macro F1=0.5687 | Loss=2.3093> Corr51
+
+51
+
+51
+
+51
+51
+[27/70] zoom_blur (Sev 2):  95%|███████████████▏| 188/198 [04:07<00:1[27/70] zoom_blur (Sev 2):  95%|███████████████▎| 189/198 [04:08<00:1[27/70] zoom_blur (Sev 2):  96%|███████████████▎| 190/198 [04:09<00:1[27/70] zoom_blur (Sev 2):  96%|███████████████▍| 1[27/70] zoom_blur (Sev 2):  97%|█████████████[27/70] zoom_blur (Sev 2):  97%|███████████████▌| 193/[27/70] zoom_blur (Sev 2):  98%|███████████████▊[27/70] zoom_blur (Sev 2):  99%|███████████████▊| 196/198 [04:17<00:02[27/70] zoom_blur (Sev [27/70] zoom_blur (Sev 2): 100%|████████████████| 198/198 [04:19<00:00,  1.                                                                             Sev 2: Acc=98.64% (Drop: - 0.15%) | Macro F1=0.9765 | Loss=0.0813
+[28/70] zoom_blur (Sev 3):   0%|                  | 0/198 [00:00<?, ?[28/70] zoom_blur (Sev 3):   1%|          | 1/198 [00:01<04:29,  [28/70[28/70] zoom_blur (Sev 3):   2%|▏         | 3/198 [0[28/70] zoom_blur (Sev 3):   2%|▏         | 4/198 [00:05<04:48,  1.4[28/70] zoom_blur (Sev 3):   3%|[28/70] zoom_blur (Sev 3):   3%|▎         | 6/198 [00[28/70] zoom_blur (Sev 3):   4%|▎         | 7/198 [00:10<04:42,  1.48[28/70] zoom_blur (Sev 3):   4%|▍         | 8/198 [00:11<04:29,  1.42[28/70] zoom_blur (Sev 3):   5%|▍         | 9/198 [00:12<04:20,  1.38[28/70] zoom_blur (Sev 3):   5%|▍        | 10/198 [00:14<04:07,  1.32[28/70] zoom_blur (Sev 3):   6%|▌        | 11/198 [00:15<04:04,  1.31[28/70] zoom_blur (Sev 3):   6%|▌        | 12/198 [00:16<03:57,  1.28[28/70] zoom_blur (Sev 3):   7%|▌        | 13/198 [00:17<03:55,  1.27[28/70] zoom_blur (Sev 3):   7%|▋        | 14/198 [00:19<03:51,  1.26[28/70] zoom_blur (Sev 3):   8%|▋        | 15/198 [00:20<03:53,  1.27[28/70] zoom_blur (Sev 3):   8%|▋        | 16/198 [00:21<03:48,  1.26[28/70] zoom_blur (Sev 3):   9%|▊        | 17/198 [00:22<03:46,  1.25[28/70] zoom_blur (Sev 3):   9%|▊        | 18/198 [00:24<03:43,  1.24[28/70] zoom_blur (Sev 3):  10%|▊        | 19/198 [00:25<03:45,  1.26[28/70] zoom_blur (Sev 3):  10%|▉     [28/70] [28/70] zoom_blur (Sev 3):  66%|█████▎  | 131/198 [02:36<01:19,  1.19s/it]
+
+
+
+
+[27/70] zoom_blur (Sev 2):  95%|███████████████▏| 188/198 [04:07<00:1[27/70] zoom_blur (Sev 2):  95%|███████████████▎| 189/198 [04:08<00:1[27/70] zoom_blur (Sev 2):  96%|███████████████▎| 190/198 [04:09<00:1[27/70] zoom_blur (Sev 2):  96%|███████████████▍| 1[27/70] zoom_blur (Sev 2):  97%|█████████████[27/70] zoom_blur (Sev 2):  97%|███████████████▌| 193/[27/70] zoom_blur (Sev 2):  98%|███████████████▊[27/70] zoom_blur (Sev 2):  99%|███████████████▊| 196/198 [04:17<00:02[27/70] zoom_blur (Sev [27/70] zoom_blur (Sev 2): 100%|████████████████| 198/198 [04:19<00:00,  1.                                                                             Sev 2: Acc=98.64% (Drop: - 0.15%) | Macro F1=0.9765 | Loss=0.0813
+[28/70] zoom_blur (Sev 3):   0%|                  | 0/198 [00:00<?, ?[28/70] zoom_blur (Sev 3):   1%|          | 1/198 [00:01<04:29,  [28/70[28/70] zoom_blur (Sev 3):   2%|▏         | 3/198 [0[28/70] zoom_blur (Sev 3):   2%|▏         | 4/198 [00:05<04:48,  1.4[28/70] zoom_blur (Sev 3):   3%|[28/70] zoom_blur (Sev 3):   3%|▎         | 6/198 [00[28/70] zoom_blur (Sev 3):   4%|▎         | 7/198 [00:10<04:42,  1.48[28/70] zoom_blur (Sev 3):   4%|▍         | 8/198 [00:11<04:29,  1.42[28/70] zoom_blur (Sev 3):   5%|▍         | 9/198 [00:12<04:20,  1.38[28/70] zoom_blur (Sev 3):   5%|▍        | 10/198 [00:14<04:07,  1.32[28/70] zoom_blur (Sev 3):   6%|▌        | 11/198 [00:15<04:04,  1.31[28/70] zoom_blur (Sev 3):   6%|▌        | 12/198 [00:16<03:57,  1.28[28/70] zoom_blur (Sev 3):   7%|▌        | 13/198 [00:17<03:55,  1.27[28/70] zoom_blur (Sev 3):   7%|▋        | 14/198 [00:19<03:51,  1.26[28/70] zoom_blur (Sev 3):   8%|▋        | 15/198 [00:20<03:53,  1.27[28/70] zoom_blur (Sev 3):   8%|▋        | 16/198 [00:21<03:48,  1.26[28/70] zoom_blur (Sev 3):   9%|▊        | 17/198 [00:22<03:46,  1.25[28/70] zoom_blur (Sev 3):   9%|▊        | 18/198 [00:24<03:43,  1.24[28/70] zoom_blur (Sev 3):  10%|▊        | 19/198 [00:25<03:45,  1.26[28/70] zoom_blur (Sev 3):  10%|▉     [28/70] [28/70] zoom_blur (Sev 3):  66%|█████▎  | 131/198 [02:36<01:19,  1.19s/it]
+[27/70] zoom_blur (Sev 2):  95%|███████████████▏| 188/198 [04:07<00:1[27/70] zoom_blur (Sev 2):  95%|███████████████▎| 189/198 [04:08<00:1[27/70] zoom_blur (Sev 2):  96%|███████████████▎| 190/198 [04:09<00:1[27/70] zoom_blur (Sev 2):  96%|███████████████▍| 1[27/70] zoom_blur (Sev 2):  97%|█████████████[27/70] zoom_blur (Sev 2):  97%|███████████████▌| 193/[27/70] zoom_blur (Sev 2):  98%|███████████████▊[27/70] zoom_blur (Sev 2):  99%|███████████████▊| 196/198 [04:17<00:02[27/70] zoom_blur (Sev [27/70] zoom_blur (Sev 2): 100%|████████████████| 198/198 [04:19<00:00,  1.                                                                             Sev 2: Acc=98.64% (Drop: - 0.15%) | Macro F1=0.9765 | Loss=0.0813
+[28/70] zoom_blur (Sev 3):   0%|                  | 0/198 [00:00<?, ?[28/70] zoom_blur (Sev 3):   1%|          | 1/198 [00:01<04:29,  [28/70[28/70] zoom_blur (Sev 3):   2%|▏         | 3/198 [0[28/70] zoom_blur (Sev 3):   2%|▏         | 4/198 [00:05<04:48,  1.4[28/70] zoom_blur (Sev 3):   3%|[28/70] zoom_blur (Sev 3):   3%|▎         | 6/198 [00[28/70] zoom_blur (Sev 3):   4%|▎         | 7/198 [00:10<04:42,  1.48[28/70] zoom_blur (Sev 3):   4%|▍         | 8/198 [00:11<04:29,  1.42[28/70] zoom_blur (Sev 3):   5%|▍         | 9/198 [00:12<04:20,  1.38[28/70] zoom_blur (Sev 3):   5%|▍        | 10/198 [00:14<04:07,  1.32[28/70] zoom_blur (Sev 3):   6%|▌        | 11/198 [00:15<04:04,  1.31[28/70] zoom_blur (Sev 3):   6%|▌        | 12/198 [00:16<03:57,  1.28[28/70] zoom_blur (Sev 3):   7%|▌        | 13/198 [00:17<03:55,  1.27[28/70] zoom_blur (Sev 3):   7%|▋        | 14/198 [00:19<03:51,  1.26[28/70] zoom_blur (Sev [27/70] zoom_blur (Sev 2):  95%|███████████████▏| 188/198 [04:07<00:1[27/70] zoom_blur (Sev 2):  95%|███████████████▎| 189/198 [04:08<00:1[27/70] zoom_blur (Sev 2):  96%|███████████████▎| 190/198 [04:09<00:1[27/70] zoom_blur (Sev 2):  96%|███████████████▍| 1[27/70] zoom_blur (Sev 2):  97%|█████████████[27/70] zoom_blur (Sev 2):  97%|███████████████▌| 193/[27/70] zoom_blur (Sev 2):  98%|███████████████▊[27/70] zoom_blur (Sev 2):  99%|███████████████▊| 196/198 [04:17<00:02[27/70] zoom_blur (Sev [27/70] zoom_blur (Sev 2): 100%|████████████████| 198/198 [04:19<00:00,  1.                                                                             Sev 2: Acc=98.64% (Drop: - 0.15%) | Macro F1=0.9765 | Loss=0.0813
+[28/70] zoom_blur (Sev 3):   0%|                  | 0/198 [00:00<?, ?[28/70] zoom_blur (Sev 3):   1%|          | 1/198 [00:01<04:29,  [28/70[28/70] zoom_blur (Sev 3):   2%|▏         | 3/198 [0[28/70] zoom_blur (Sev 3):   2%|▏         | 4/198 [00:05<04:48,  1.4[28/70] zoom_blur (Sev 3):   3%|[28/70] zoom_blur (Sev 3):   3%|▎         | 6/198 [00[28/70] zoom_blur (Sev 3):   4%|▎         | 7/198 [00:10<04:42,  1.48[28/70] zoom_blur (Sev 3):   4%|▍         | 8/198 [00:11<04:29,  1.42[28/70] zoom_blur (Sev 3):   5%|▍         | 9/198 [00:12<04:20,  1.38[27/70] zoom_blur (Sev 2):  95%|███████████████▏| 188/198 [04:07<00:1[27/70] zoom_blur (Sev 2):  95%|███████████████▎| 189/198 [04:08<00:1[27/70] zoom_blur (Sev 2):  96%|███████████████▎| 190/198 [04:09<00:1[27/70] zoom_blur (Sev 2):  96%|███████████████▍| 1[27/70] zoom_blur (Sev 2):  97%|█████████████[27/70] zoom_blur (Sev 2):  97%|███████████████▌| 193/[27/70] zoom_blur (Sev 2):  98%|███████████████▊[27/70] zoom_blur (Sev 2):  99%|███████████████▊| 196/198 [04:17<00:02[27/70] zoom_blur (Sev [27/70] zoom_blur (Sev 2): 100%|████████████████| 198/[27/70] zoom_blur (Sev 2):  95%|███████████████▏| 188/198 [04:07<00:1[27/70] zoom_blur (Sev 2):  95%|███████████████▎| 189/198 [04:08<00:1[27/70] zoom_blur (Sev 2):  96%|██████████████[27/70] zoom_blur (Sev 2):  95%|███████████████▏| 188/198 [04:07<00:1[27/70] zoom_blur (Sev 2):  95%|███████████████▎| 189/198 [p: - 0.15%) | Macro F1=0.9765 | Lossp: - 0.15%) | Macro F1=0.9765 | Loss=0.0813
+[28/70] zoom_blur (Sev 3):   0%|                  | 0/198 [00:00<?, ?[28/70] zoom_blur (Sev 3):   1%|          | 1/198 [00:01<04:29,  [28/70[28/70] zoom_blur (Sev 3):   2%|▏         | 3/198 [0[28/70] zoom_blur (Sev 3):   2%|▏         | 4/198 [00:05<04:48,  1.4[28/70] zoom_blur (Sev 3):   3%|[28/70] zoom_blur (Sev 3):   3%|▎         | 6/198 [00[28/70] zoom_blur (Sev 3):   4%|▎         | 7/198 [00:10<04:42,  1.48[28/70] zoom_blur (Sev 3):   4%|▍         | 8/198 [00:11<04:29,  1.42[28/70] zoom_blur (Sev 3):   5%|▍         | 9/198 [00:12<04:20,  1.38[28/70] zoom_blur (Sev 3):   5%|▍        | 10/198 [00:14<04:07,  1.32[28/70] zoom_blur (Sev 3):   6%|▌        | 11/198 [00:15<04:04,  1.31[28/70] zoom_blur (Sev 3):   6%|▌        | 12/198 [00:16<03:57,  1.28[28/70] zoom_blur (Sev 3):   7%|▌        | 13/198 [00:17<03:55,  1.27[28/70] zoom_blur (Sev 3):   7%|▋        | 14/198 [00:19<03:51,  1.26[28/70] zoom_blur (Sev 3):   8%|▋        | 15/198 [00:20<03:53,  1.27[28/70] zoom_blur (Sev 3):   8%|▋        | 16/198 [00:21<03:48,  1.26[28/70] zoom_blur (Sev 3):   9%|▊        | 17/198 [00:22<03:46,  1.25[28/70] zoom_blur (Sev 3):   9%|▊        | 18/198 [00:24<03:43,  1.24[28/70] zoom_blur (Sev 3):  10%|▊      Sev 3: Acc=98.70% (Drop: - 0.09%) | Macro F1=0.9783 | Loss=0.0834       /198 [03:05<01:13,  1.56s/it]:  75%|██████  | 1
+  Sev 4: Acc=98.61% (Drop: - 0.18%) | Macro F1=0.9769 | Loss=0.0889
+  Sev 5: Acc=98.17% (Drop: - 0.62%) | Macro F1=0.9707 | Loss=0.1154

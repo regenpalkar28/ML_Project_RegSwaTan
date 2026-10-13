@@ -105,11 +105,17 @@ checkpoints/*
 # ==========================================
 # Experiment Logs & Results
 # ==========================================
-results/plots/*
+# Track result assets (CSVs, PNG heatmaps/plots, JSON reports) for GitHub
+!results/plots/*.png
+!results/plots/*.csv
+!results/plots/*.json
 !results/plots/.gitkeep
-results/csv/*
+!results/csv/*.csv
+!results/csv/*.json
 !results/csv/.gitkeep
-results/confusion_matrices/*
+!results/confusion_matrices/*.png
+!results/confusion_matrices/*.csv
+!results/confusion_matrices/*.json
 !results/confusion_matrices/.gitkeep
 wandb/
 runs/

@@ -1,0 +1,44 @@
+Class_ID,Class_Name,Precision,Recall,F1_Score,Support
+0,0: Speed limit (20km/h),0.9677,1.0,0.9836,60
+1,1: Speed limit (30km/h),0.9986,1.0,0.9993,720
+2,2: Speed limit (50km/h),0.9987,0.9987,0.9987,750
+3,3: Speed limit (60km/h),0.9955,0.9889,0.9922,450
+4,4: Speed limit (70km/h),1.0,0.9939,0.997,660
+5,5: Speed limit (80km/h),0.989,0.9968,0.9929,630
+6,6: End of speed limit (80km/h),1.0,0.96,0.9796,150
+7,7: Speed limit (100km/h),1.0,0.9956,0.9978,450
+8,8: Speed limit (120km/h),0.9978,0.9978,0.9978,450
+9,9: No passing,1.0,0.9979,0.999,480
+10,10: No passing for vehicles over 3.5 metric tons,0.9925,0.997,0.9947,660
+11,11: Right-of-way at the next intersection,0.9369,0.9905,0.963,420
+12,12: Priority road,0.9985,0.9667,0.9823,690
+13,13: Yield,0.9822,0.9972,0.9897,720
+14,14: Stop,1.0,1.0,1.0,270
+15,15: No vehicles,1.0,1.0,1.0,210
+16,16: Vehicles over 3.5 metric tons prohibited,0.9934,1.0,0.9967,150
+17,17: No entry,0.9756,1.0,0.9877,360
+18,18: General caution,1.0,0.959,0.9791,390
+19,19: Dangerous curve to the left,0.7792,1.0,0.8759,60
+20,20: Dangerous curve to the right,0.9375,1.0,0.9677,90
+21,21: Double curve,0.96,0.8,0.8727,90
+22,22: Bumpy road,1.0,0.9333,0.9655,120
+23,23: Slippery road,0.9933,0.9933,0.9933,150
+24,24: Road narrows on the right,1.0,0.9556,0.9773,90
+25,25: Road work,0.9875,0.9854,0.9864,480
+26,26: Traffic signals,0.9677,1.0,0.9836,180
+27,27: Pedestrians,0.9516,0.9833,0.9672,60
+28,28: Children crossing,0.9671,0.98,0.9735,150
+29,29: Bicycles crossing,0.9474,1.0,0.973,90
+30,30: Beware of ice/snow,0.9632,0.8733,0.9161,150
+31,31: Wild animals crossing,0.9963,1.0,0.9982,270
+32,32: End of all speed and passing limits,0.8571,1.0,0.9231,60
+33,33: Turn right ahead,1.0,1.0,1.0,210
+34,34: Turn left ahead,1.0,1.0,1.0,120
+35,35: Ahead only,1.0,1.0,1.0,390
+36,36: Go straight or right,1.0,1.0,1.0,120
+37,37: Go straight or left,0.9524,1.0,0.9756,60
+38,38: Keep right,1.0,0.9899,0.9949,690
+39,39: Keep left,1.0,0.9778,0.9888,90
+40,40: Roundabout mandatory,0.9888,0.9778,0.9832,90
+41,41: End of no passing,0.8485,0.9333,0.8889,60
+42,42: End of no passing by vehicles over 3.5 metric tons,1.0,0.9111,0.9535,90

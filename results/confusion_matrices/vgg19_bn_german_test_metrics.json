@@ -1,0 +1,138 @@
+{
+    "model": "vgg19_bn",
+    "dataset": "german",
+    "split": "test",
+    "num_classes": 43,
+    "total_samples": 12630,
+    "overall_accuracy": 0.9879,
+    "macro_avg_f1": 0.9765,
+    "weighted_avg_f1": 0.9879,
+    "top_confused_pairs": [
+        {
+            "true_class_id": 21,
+            "true_class_label": "21: Double curve",
+            "pred_class_id": 11,
+            "pred_class_label": "11: Right-of-way at the next intersection",
+            "count": 18,
+            "error_rate_for_class": 0.2
+        },
+        {
+            "true_class_id": 30,
+            "true_class_label": "30: Beware of ice/snow",
+            "pred_class_id": 19,
+            "pred_class_label": "19: Dangerous curve to the left",
+            "count": 14,
+            "error_rate_for_class": 0.0933
+        },
+        {
+            "true_class_id": 12,
+            "true_class_label": "12: Priority road",
+            "pred_class_id": 13,
+            "pred_class_label": "13: Yield",
+            "count": 13,
+            "error_rate_for_class": 0.0188
+        },
+        {
+            "true_class_id": 12,
+            "true_class_label": "12: Priority road",
+            "pred_class_id": 17,
+            "pred_class_label": "17: No entry",
+            "count": 9,
+            "error_rate_for_class": 0.013
+        },
+        {
+            "true_class_id": 42,
+            "true_class_label": "42: End of no passing by vehicles over 3.5 metric tons",
+            "pred_class_id": 41,
+            "pred_class_label": "41: End of no passing",
+            "count": 8,
+            "error_rate_for_class": 0.0889
+        },
+        {
+            "true_class_id": 25,
+            "true_class_label": "25: Road work",
+            "pred_class_id": 11,
+            "pred_class_label": "11: Right-of-way at the next intersection",
+            "count": 7,
+            "error_rate_for_class": 0.0146
+        },
+        {
+            "true_class_id": 6,
+            "true_class_label": "6: End of speed limit (80km/h)",
+            "pred_class_id": 32,
+            "pred_class_label": "32: End of all speed and passing limits",
+            "count": 6,
+            "error_rate_for_class": 0.04
+        },
+        {
+            "true_class_id": 18,
+            "true_class_label": "18: General caution",
+            "pred_class_id": 25,
+            "pred_class_label": "25: Road work",
+            "count": 6,
+            "error_rate_for_class": 0.0154
+        },
+        {
+            "true_class_id": 22,
+            "true_class_label": "22: Bumpy road",
+            "pred_class_id": 20,
+            "pred_class_label": "20: Dangerous curve to the right",
+            "count": 6,
+            "error_rate_for_class": 0.05
+        },
+        {
+            "true_class_id": 3,
+            "true_class_label": "3: Speed limit (60km/h)",
+            "pred_class_id": 5,
+            "pred_class_label": "5: Speed limit (80km/h)",
+            "count": 5,
+            "error_rate_for_class": 0.0111
+        },
+        {
+            "true_class_id": 38,
+            "true_class_label": "38: Keep right",
+            "pred_class_id": 10,
+            "pred_class_label": "10: No passing for vehicles over 3.5 metric tons",
+            "count": 5,
+            "error_rate_for_class": 0.0072
+        },
+        {
+            "true_class_id": 11,
+            "true_class_label": "11: Right-of-way at the next intersection",
+            "pred_class_id": 30,
+            "pred_class_label": "30: Beware of ice/snow",
+            "count": 4,
+            "error_rate_for_class": 0.0095
+        },
+        {
+            "true_class_id": 18,
+            "true_class_label": "18: General caution",
+            "pred_class_id": 26,
+            "pred_class_label": "26: Traffic signals",
+            "count": 4,
+            "error_rate_for_class": 0.0103
+        },
+        {
+            "true_class_id": 30,
+            "true_class_label": "30: Beware of ice/snow",
+            "pred_class_id": 28,
+            "pred_class_label": "28: Children crossing",
+            "count": 4,
+            "error_rate_for_class": 0.0267
+        },
+        {
+            "true_class_id": 41,
+            "true_class_label": "41: End of no passing",
+            "pred_class_id": 32,
+            "pred_class_label": "32: End of all speed and passing limits",
+            "count": 4,
+            "error_rate_for_class": 0.0667
+        }
+    ],
+    "saved_files": {
+        "raw_csv": "vgg19_bn_german_test_cm_raw.csv",
+        "normalized_csv": "vgg19_bn_german_test_cm_norm.csv",
+        "raw_heatmap_png": "vgg19_bn_german_test_cm.png",
+        "normalized_heatmap_png": "vgg19_bn_german_test_cm_normalized.png"
+    }
+}
