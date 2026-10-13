@@ -13,8 +13,8 @@ def test_corruption(image_path: str, corruption_type: str, severity: int = 3):
 
 
 if __name__ == "__main__":
-    IMAGE_PATH = r"C:\Users\Regen\Machine Learning\German Dataset\Meta\25.png"
+    IMAGE_PATH = r"C:\Users\Regen\OneDrive\Pictures\HOMELANDER_REFERENCE.jpg"
     CORRUPTION_TYPE = "fog"
-    SEVERITY = 3  # 1-5
+    SEVERITY = 5  # 1-5
 
     test_corruption(IMAGE_PATH, CORRUPTION_TYPE, severity=SEVERITY)

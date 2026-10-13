@@ -64,10 +64,20 @@ def evaluate_model(
     eval_loader = test_loader if split.lower() == "test" else val_loader
     print(f"Evaluating {len(eval_loader.dataset):,} samples across {num_classes} classes...\n")
 
-    # 2. Instantiate and load model
-    model = get_model(num_classes=num_classes, model_type=model_type).to(DEVICE)
+    # 2. Load Checkpoint & Auto-detect metadata if available
     checkpoint = torch.load(ckpt_path, map_location=DEVICE)
-    state_dict = checkpoint.get("model_state_dict", checkpoint)
+    if isinstance(checkpoint, dict):
+        saved_model_type = checkpoint.get("model_type")
+        if saved_model_type and saved_model_type != model_type:
+            print(f"[Info] Auto-detected model_type='{saved_model_type}' from checkpoint (overriding '{model_type}').")
+            model_type = saved_model_type
+        if "num_classes" in checkpoint:
+            num_classes = checkpoint["num_classes"]
+        state_dict = checkpoint.get("model_state_dict", checkpoint)
+    else:
+        state_dict = checkpoint
+
+    model = get_model(num_classes=num_classes, model_type=model_type).to(DEVICE)
     model.load_state_dict(state_dict)
     model.eval()
 
