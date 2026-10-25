@@ -125,9 +125,23 @@ def get_model(
             in_channels=in_channels,
             **kwargs,
         )
+    elif mtype in ["vgg19_msff", "vgg19_bn_msff", "msff"]:
+        from .vgg19_model import get_vgg19_msff_model
+        return get_vgg19_msff_model(
+            num_classes=num_classes,
+            in_channels=in_channels,
+            **kwargs,
+        )
+    elif mtype in ["vgg19_msff_attn", "vgg19_bn_msff_attn", "vgg19_msff_se", "vgg19_bn_msff_se", "msff_attn", "msff_se"]:
+        from .vgg19_model import get_vgg19_msff_attn_model
+        return get_vgg19_msff_attn_model(
+            num_classes=num_classes,
+            in_channels=in_channels,
+            **kwargs,
+        )
     else:
         raise ValueError(
-            f"Unknown model_type '{model_type}'. Supported types: ['basic_cnn', 'vgg19', 'vgg19_bn']"
+            f"Unknown model_type '{model_type}'. Supported types: ['basic_cnn', 'vgg19', 'vgg19_bn', 'vgg19_bn_msff', 'vgg19_bn_msff_attn']"
         )
 
 

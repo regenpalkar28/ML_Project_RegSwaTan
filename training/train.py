@@ -359,8 +359,18 @@ def parse_args():
         "--model_type",
         type=str,
         default="raw_cnn",
-        choices=["basic_cnn", "raw_cnn", "cnn", "vgg19", "vgg19_bn"],
-        help="Architecture to train ('raw_cnn', 'basic_cnn', 'vgg19', 'vgg19_bn')",
+        choices=[
+            "basic_cnn",
+            "raw_cnn",
+            "cnn",
+            "vgg19",
+            "vgg19_bn",
+            "vgg19_msff",
+            "vgg19_bn_msff",
+            "vgg19_msff_attn",
+            "vgg19_bn_msff_attn",
+        ],
+        help="Architecture to train ('raw_cnn', 'basic_cnn', 'vgg19_bn', 'vgg19_bn_msff', 'vgg19_bn_msff_attn')",
     )
     parser.add_argument(
         "--dataset",

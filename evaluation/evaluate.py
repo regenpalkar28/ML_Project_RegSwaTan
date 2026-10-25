@@ -155,9 +155,17 @@ def main():
     parser.add_argument(
         "--model_type",
         type=str,
-        default="raw_cnn",
-        choices=["raw_cnn", "basic_cnn", "vgg19", "vgg19_bn"],
-        help="Model architecture ('raw_cnn', 'vgg19', etc.)",
+        choices=[
+            "raw_cnn",
+            "basic_cnn",
+            "vgg19",
+            "vgg19_bn",
+            "vgg19_msff",
+            "vgg19_bn_msff",
+            "vgg19_msff_attn",
+            "vgg19_bn_msff_attn",
+        ],
+        help="Model architecture ('raw_cnn', 'vgg19_bn', 'vgg19_bn_msff', 'vgg19_bn_msff_attn')",
     )
     parser.add_argument(
         "--split",
