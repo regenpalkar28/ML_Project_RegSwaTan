@@ -1,0 +1,70 @@
+======================================================================
+  TRAFFIC SIGN RECOGNITION: ROBUSTNESS BENCHMARK (70 CONDITIONS)
+======================================================================
+Timestamp:            2026-10-14 10:23:29
+Model Architecture:   VGG19_BN
+Target Dataset:       GERMAN
+Device:               cpu
+Batch Size:           64
+Output Directory:     C:\Users\Regen\Machine Learning\ML_Project_RegSwaTan\results\confusion_matrices\corruptions
+Real-Time Log (.txt): robustness_vgg19_bn_german_output.txt
+Detailed CSV:         robustness_vgg19_bn_german_detailed.csv
+Summary Matrix CSV:   robustness_vgg19_bn_german_matrix.csv
+======================================================================
+Loading checkpoint: vgg19_bn_german_best.pth
+
+[Phase 1/2] Evaluating Clean Baseline Test Set...
+----------------------------------------------------------------------
+CLEAN BASELINE PERFORMANCE:
+  Accuracy:    98.79%
+  Macro F1:    0.9765
+  Weighted F1: 0.9879
+  Loss:        0.0715
+----------------------------------------------------------------------
+
+[Phase 2/2] Running Corrupted Test Conditions (On-the-Fly)...
+
+>>> Corruption: GAUSSIAN_NOISE
+  Sev 1: Acc=95.38% (Drop: - 3.40%) | Macro F1=0.9273 | Loss=0.2738
+  Sev 2: Acc=90.63% (Drop: - 8.16%) | Macro F1=0.8645 | Loss=0.6809
+  Sev 3: Acc=84.49% (Drop: -14.30%) | Macro F1=0.7902 | Loss=1.2402
+  Sev 4: Acc=79.19% (Drop: -19.60%) | Macro F1=0.7376 | Loss=1.8960
+  Sev 5: Acc=68.74% (Drop: -30.05%) | Macro F1=0.6291 | Loss=3.0426
+
+>>> Corruption: SHOT_NOISE
+  Sev 1: Acc=97.78% (Drop: - 1.01%) | Macro F1=0.9617 | Loss=0.1280
+  Sev 2: Acc=95.76% (Drop: - 3.03%) | Macro F1=0.9296 | Loss=0.2530
+  Sev 3: Acc=91.88% (Drop: - 6.91%) | Macro F1=0.8801 | Loss=0.5224
+  Sev 4: Acc=83.69% (Drop: -15.10%) | Macro F1=0.7770 | Loss=1.2065
+  Sev 5: Acc=68.67% (Drop: -30.12%) | Macro F1=0.6181 | Loss=2.5835
+
+>>> Corruption: IMPULSE_NOISE
+  Sev 1: Acc=94.60% (Drop: - 4.19%) | Macro F1=0.9154 | Loss=0.3331
+  Sev 2: Acc=87.53% (Drop: -11.26%) | Macro F1=0.8215 | Loss=0.8176
+  Sev 3: Acc=72.79% (Drop: -25.99%) | Macro F1=0.6538 | Loss=2.0693
+  Sev 4: Acc=55.87% (Drop: -42.92%) | Macro F1=0.4938 | Loss=3.8003
+  Sev 5: Acc=41.16% (Drop: -57.63%) | Macro F1=0.3691 | Loss=5.5643
+
+>>> Corruption: DEFOCUS_BLUR
+  Sev 1: Acc=98.61% (Drop: - 0.17%) | Macro F1=0.9740 | Loss=0.0828
+  Sev 2: Acc=97.81% (Drop: - 0.98%) | Macro F1=0.9633 | Loss=0.1405
+  Sev 3: Acc=95.86% (Drop: - 2.93%) | Macro F1=0.9375 | Loss=0.2564
+  Sev 4: Acc=84.48% (Drop: -14.31%) | Macro F1=0.7760 | Loss=1.0178
+  Sev 5: Acc=60.55% (Drop: -38.24%) | Macro F1=0.4968 | Loss=3.0689
+
+>>> Corruption: MOTION_BLUR
+  Sev 1: Acc=97.66% (Drop: - 1.12%) | Macro F1=0.9628 | Loss=0.1420
+  Sev 2: Acc=93.50% (Drop: - 5.29%) | Macro F1=0.8935 | Loss=0.4149
+  Sev 3: Acc=82.83% (Drop: -15.96%) | Macro F1=0.7346 | Loss=1.1088
+  Sev 4: Acc=67.70% (Drop: -31.08%) | Macro F1=0.5637 | Loss=2.2905
+  Sev 5: Acc=45.18% (Drop: -53.61%) | Macro F1=0.3230 | Loss=4.8337
+
+>>> Corruption: ZOOM_BLUR
+  Sev 1: Acc=98.61% (Drop: - 0.17%) | Macro F1=0.9757 | Loss=0.0792
+  Sev 2: Acc=98.64% (Drop: - 0.15%) | Macro F1=0.9765 | Loss=0.0813
+  Sev 3: Acc=98.70% (Drop: - 0.09%) | Macro F1=0.9783 | Loss=0.0834
+  Sev 4: Acc=98.61% (Drop: - 0.18%) | Macro F1=0.9769 | Loss=0.0889
+  Sev 5: Acc=98.17% (Drop: - 0.62%) | Macro F1=0.9707 | Loss=0.1154
+
+>>> Corruption: FOG
+  Sev 1: Acc=91.28% (Drop: - 7.51%) | Macro F1=0.8754 | Loss=0.6679

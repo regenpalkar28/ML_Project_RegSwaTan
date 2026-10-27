@@ -6,10 +6,11 @@ Exports tabular CSVs, computes mCE (mean Corruption Error), and generates degrad
 """
 
 import argparse
+from datetime import datetime
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 # Add project root to sys.path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -28,6 +29,7 @@ from tqdm import tqdm
 
 from config import (
     CHECKPOINTS_DIR,
+    CONFUSION_MATRICES_DIR,
     CSV_RESULTS_DIR,
     DATASET_NUM_CLASSES,
     DEVICE,
@@ -35,6 +37,7 @@ from config import (
     NORM_MEAN,
     NORM_STD,
     PLOTS_RESULTS_DIR,
+    RESULTS_DIR,
 )
 from corruption import (
     BENCHMARK_CORRUPTIONS,
@@ -44,6 +47,49 @@ from corruption import (
 from data.dataset import get_dataset
 from evaluation.metrics import compute_metrics
 from models.RawCNN import get_model
+
+# Default output directory requested for storing all corruptions artifacts
+DEFAULT_CORRUPTIONS_DIR = RESULTS_DIR / "confusion_matrices" / "corruptions"
+DEFAULT_CORRUPTIONS_DIR.mkdir(parents=True, exist_ok=True)
+
+
+class DualOutputTee:
+    """
+    Duplicates stdout stream to both the console terminal and a log file,
+    flushing on every write to guarantee real-time persistence upon abrupt termination.
+    """
+
+    def __init__(self, filepath: Union[str, Path], mode: str = "w"):
+        self.filepath = Path(filepath)
+        self.filepath.parent.mkdir(parents=True, exist_ok=True)
+        self.terminal = sys.stdout
+        self.log_file = open(self.filepath, mode, encoding="utf-8")
+        self._closed = False
+
+    def write(self, message: str):
+        self.terminal.write(message)
+        if not self._closed and self.log_file:
+            self.log_file.write(message)
+            self.log_file.flush()
+
+    def flush(self):
+        self.terminal.flush()
+        if not self._closed and self.log_file:
+            self.log_file.flush()
+
+    def isatty(self):
+        return getattr(self.terminal, "isatty", lambda: False)()
+
+    def close(self):
+        if not self._closed:
+            self._closed = True
+            if self.log_file:
+                try:
+                    self.log_file.flush()
+                    self.log_file.close()
+                except Exception:
+                    pass
+
 
 
 class CorruptedTransform:
@@ -181,136 +227,171 @@ def plot_degradation_curves(
 
 
 def run_robustness_experiment(args):
-    print("=" * 70)
-    print("  TRAFFIC SIGN RECOGNITION: ROBUSTNESS BENCHMARK (70 CONDITIONS)")
-    print("=" * 70)
-    print(f"Model Architecture: {args.model_type.upper()}")
-    print(f"Target Dataset:     {args.dataset.upper()}")
-    print(f"Device:             {DEVICE}")
-    print(f"Batch Size:         {args.batch_size}")
-    print("=" * 70)
+    # Output directory configuration: defaults to results/confusion_matrices/corruptions
+    output_dir = Path(args.output_dir) if args.output_dir else DEFAULT_CORRUPTIONS_DIR
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-    # 1. Resolve Checkpoint
-    if args.checkpoint is not None:
-        ckpt_path = Path(args.checkpoint)
-    else:
-        # Auto-detect default best checkpoint
-        candidates = [
-            CHECKPOINTS_DIR / f"{args.model_type}_{args.dataset}_best.pth",
-            CHECKPOINTS_DIR / f"{args.model_type}_german_best.pth",
-            CHECKPOINTS_DIR / f"{args.model_type}_best.pth",
-        ]
-        ckpt_path = next((c for c in candidates if c.exists()), None)
-        if ckpt_path is None:
-            raise FileNotFoundError(
-                f"No checkpoint found. Searched:\n"
-                + "\n".join(f" - {c}" for c in candidates)
-                + "\nPlease specify --checkpoint <path>."
-            )
+    log_txt_path = output_dir / f"robustness_{args.model_type}_{args.dataset}_output.txt"
+    detailed_csv_path = output_dir / f"robustness_{args.model_type}_{args.dataset}_detailed.csv"
+    matrix_csv_path = output_dir / f"robustness_{args.model_type}_{args.dataset}_matrix.csv"
 
-    print(f"Loading checkpoint: {ckpt_path.name}")
-    num_classes = DATASET_NUM_CLASSES.get(args.dataset.lower(), 43)
+    # Initialize Real-Time Logging to .txt file and console
+    log_mode = "a" if getattr(args, "append_log", False) else "w"
+    tee = DualOutputTee(log_txt_path, mode=log_mode)
+    original_stdout = sys.stdout
+    sys.stdout = tee
 
-    # Instantiate model
-    model = get_model(
-        num_classes=num_classes,
-        model_type=args.model_type,
-        compact_head=args.compact_head,
-    ).to(DEVICE)
-
-    checkpoint = torch.load(ckpt_path, map_location=DEVICE)
-    if "model_state_dict" in checkpoint:
-        model.load_state_dict(checkpoint["model_state_dict"])
-    else:
-        model.load_state_dict(checkpoint)
-    model.eval()
-
-    criterion = nn.CrossEntropyLoss()
-
-    # 2. Evaluate Clean Baseline
-    print("\n[Phase 1/2] Evaluating Clean Baseline Test Set...")
-    clean_transform = CorruptedTransform(
-        corruption_type=None,
-        img_size=args.img_size,
-    )
-    clean_dataset = get_dataset(
-        dataset_name=args.dataset,
-        split="test",
-        root_dir=args.data_dir,
-        transform=clean_transform,
-    )
-    clean_loader = DataLoader(
-        clean_dataset,
-        batch_size=args.batch_size,
-        shuffle=False,
-        num_workers=args.num_workers,
-        pin_memory=False,
-    )
-
-    clean_loss, clean_acc, clean_macro_f1, clean_weighted_f1 = evaluate_condition(
-        model, clean_loader, criterion, DEVICE, desc="Clean Baseline"
-    )
-
-    print("-" * 70)
-    print(f"CLEAN BASELINE PERFORMANCE:")
-    print(f"  Accuracy:    {clean_acc:.2f}%")
-    print(f"  Macro F1:    {clean_macro_f1:.4f}")
-    print(f"  Weighted F1: {clean_weighted_f1:.4f}")
-    print(f"  Loss:        {clean_loss:.4f}")
-    print("-" * 70)
-
-    # 3. Evaluate Corrupted Test Sets (14 types x 5 severities = 70 conditions)
-    print("\n[Phase 2/2] Running 70 Corrupted Test Conditions (14 Corruptions x 5 Severities)...")
     records = []
-    severities = args.severities
-    corruptions_to_test = args.corruptions if args.corruptions else BENCHMARK_CORRUPTIONS
+    try:
+        timestamp_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print("=" * 70)
+        print("  TRAFFIC SIGN RECOGNITION: ROBUSTNESS BENCHMARK (70 CONDITIONS)")
+        print("=" * 70)
+        print(f"Timestamp:            {timestamp_str}")
+        print(f"Model Architecture:   {args.model_type.upper()}")
+        print(f"Target Dataset:       {args.dataset.upper()}")
+        print(f"Device:               {DEVICE}")
+        print(f"Batch Size:           {args.batch_size}")
+        print(f"Output Directory:     {output_dir.resolve()}")
+        print(f"Real-Time Log (.txt): {log_txt_path.name}")
+        print(f"Detailed CSV:         {detailed_csv_path.name}")
+        print(f"Summary Matrix CSV:   {matrix_csv_path.name}")
+        print("=" * 70)
 
-    total_conditions = len(corruptions_to_test) * len(severities)
-    current_cond = 0
-    start_time = time.time()
+        # Initialize detailed CSV with headers immediately so file exists from the start
+        columns = [
+            "Model",
+            "Dataset",
+            "Category",
+            "Corruption",
+            "Severity",
+            "Accuracy",
+            "Macro_F1",
+            "Weighted_F1",
+            "Loss",
+            "Accuracy_Drop",
+            "Relative_Drop_Pct",
+        ]
+        pd.DataFrame(columns=columns).to_csv(detailed_csv_path, index=False)
 
-    for corr in corruptions_to_test:
-        print(f"\n>>> Corruption: {corr.upper()}")
-        for sev in severities:
-            current_cond += 1
-            cond_desc = f"[{current_cond:02d}/{total_conditions:02d}] {corr} (Sev {sev})"
+        # 1. Resolve Checkpoint
+        if args.checkpoint is not None:
+            ckpt_path = Path(args.checkpoint)
+        else:
+            candidates = [
+                CHECKPOINTS_DIR / f"{args.model_type}_{args.dataset}_best.pth",
+                CHECKPOINTS_DIR / f"{args.model_type}_german_best.pth",
+                CHECKPOINTS_DIR / f"{args.model_type}_best.pth",
+            ]
+            ckpt_path = next((c for c in candidates if c.exists()), None)
+            if ckpt_path is None:
+                raise FileNotFoundError(
+                    f"No checkpoint found. Searched:\n"
+                    + "\n".join(f" - {c}" for c in candidates)
+                    + "\nPlease specify --checkpoint <path>."
+                )
 
-            # Build on-the-fly corrupted test loader
-            c_transform = CorruptedTransform(
-                corruption_type=corr,
-                severity=sev,
-                img_size=args.img_size,
-            )
-            c_dataset = get_dataset(
-                dataset_name=args.dataset,
-                split="test",
-                root_dir=args.data_dir,
-                transform=c_transform,
-            )
-            c_loader = DataLoader(
-                c_dataset,
-                batch_size=args.batch_size,
-                shuffle=False,
-                num_workers=args.num_workers,
-                pin_memory=False,
-            )
+        print(f"Loading checkpoint: {ckpt_path.name}")
+        num_classes = DATASET_NUM_CLASSES.get(args.dataset.lower(), 43)
 
-            c_loss, c_acc, c_macro_f1, c_weighted_f1 = evaluate_condition(
-                model, c_loader, criterion, DEVICE, desc=cond_desc
-            )
+        # Instantiate model
+        model = get_model(
+            num_classes=num_classes,
+            model_type=args.model_type,
+            compact_head=args.compact_head,
+        ).to(DEVICE)
 
-            acc_drop = clean_acc - c_acc
-            rel_drop = (acc_drop / clean_acc * 100.0) if clean_acc > 0 else 0.0
+        checkpoint = torch.load(ckpt_path, map_location=DEVICE)
+        if "model_state_dict" in checkpoint:
+            model.load_state_dict(checkpoint["model_state_dict"])
+        else:
+            model.load_state_dict(checkpoint)
+        model.eval()
 
-            # Find category
-            category = "Other"
-            for cat, members in CORRUPTION_CATEGORIES.items():
-                if corr in members:
-                    category = cat
-                    break
+        criterion = nn.CrossEntropyLoss()
 
-            records.append(
-                {
+        # 2. Evaluate Clean Baseline
+        print("\n[Phase 1/2] Evaluating Clean Baseline Test Set...")
+        clean_transform = CorruptedTransform(
+            corruption_type=None,
+            img_size=args.img_size,
+        )
+        clean_dataset = get_dataset(
+            dataset_name=args.dataset,
+            split="test",
+            root_dir=args.data_dir,
+            transform=clean_transform,
+        )
+        clean_loader = DataLoader(
+            clean_dataset,
+            batch_size=args.batch_size,
+            shuffle=False,
+            num_workers=args.num_workers,
+            pin_memory=False,
+        )
+
+        clean_loss, clean_acc, clean_macro_f1, clean_weighted_f1 = evaluate_condition(
+            model, clean_loader, criterion, DEVICE, desc="Clean Baseline"
+        )
+
+        print("-" * 70)
+        print(f"CLEAN BASELINE PERFORMANCE:")
+        print(f"  Accuracy:    {clean_acc:.2f}%")
+        print(f"  Macro F1:    {clean_macro_f1:.4f}")
+        print(f"  Weighted F1: {clean_weighted_f1:.4f}")
+        print(f"  Loss:        {clean_loss:.4f}")
+        print("-" * 70)
+
+        # 3. Evaluate Corrupted Test Sets (14 types x 5 severities = 70 conditions)
+        print("\n[Phase 2/2] Running Corrupted Test Conditions (On-the-Fly)...")
+        severities = args.severities
+        corruptions_to_test = args.corruptions if args.corruptions else BENCHMARK_CORRUPTIONS
+
+        total_conditions = len(corruptions_to_test) * len(severities)
+        current_cond = 0
+        start_time = time.time()
+
+        for corr in corruptions_to_test:
+            print(f"\n>>> Corruption: {corr.upper()}")
+            for sev in severities:
+                current_cond += 1
+                cond_desc = f"[{current_cond:02d}/{total_conditions:02d}] {corr} (Sev {sev})"
+
+                # Build on-the-fly corrupted test loader
+                c_transform = CorruptedTransform(
+                    corruption_type=corr,
+                    severity=sev,
+                    img_size=args.img_size,
+                )
+                c_dataset = get_dataset(
+                    dataset_name=args.dataset,
+                    split="test",
+                    root_dir=args.data_dir,
+                    transform=c_transform,
+                )
+                c_loader = DataLoader(
+                    c_dataset,
+                    batch_size=args.batch_size,
+                    shuffle=False,
+                    num_workers=args.num_workers,
+                    pin_memory=False,
+                )
+
+                c_loss, c_acc, c_macro_f1, c_weighted_f1 = evaluate_condition(
+                    model, c_loader, criterion, DEVICE, desc=cond_desc
+                )
+
+                acc_drop = clean_acc - c_acc
+                rel_drop = (acc_drop / clean_acc * 100.0) if clean_acc > 0 else 0.0
+
+                # Find category
+                category = "Other"
+                for cat, members in CORRUPTION_CATEGORIES.items():
+                    if corr in members:
+                        category = cat
+                        break
+
+                record = {
                     "Model": args.model_type,
                     "Dataset": args.dataset,
                     "Category": category,
@@ -323,67 +404,82 @@ def run_robustness_experiment(args):
                     "Accuracy_Drop": round(acc_drop, 2),
                     "Relative_Drop_Pct": round(rel_drop, 2),
                 }
+                records.append(record)
+
+                # Update CSV metrics on the go as iterations follow
+                df_current = pd.DataFrame(records)
+                df_current.to_csv(detailed_csv_path, index=False)
+
+                # Update matrix table CSV on the go
+                try:
+                    pivot_acc = df_current.pivot(index="Corruption", columns="Severity", values="Accuracy")
+                    pivot_acc["Mean_Acc"] = pivot_acc.mean(axis=1).round(2)
+                    pivot_acc["Clean_Acc"] = round(clean_acc, 2)
+                    pivot_acc.to_csv(matrix_csv_path)
+                except Exception:
+                    pass
+
+                print(
+                    f"  Sev {sev}: Acc={c_acc:5.2f}% (Drop: -{acc_drop:5.2f}%) | "
+                    f"Macro F1={c_macro_f1:.4f} | Loss={c_loss:.4f}"
+                )
+
+        elapsed_min = (time.time() - start_time) / 60.0
+        print("=" * 70)
+        print(f"Robustness Benchmark Finished in {elapsed_min:.2f} minutes.")
+        print(f"Saved detailed metrics CSV to: {detailed_csv_path}")
+        print(f"Saved summary matrix CSV to:   {matrix_csv_path}")
+
+        # 4. Category-wise Summary & mCE
+        if records:
+            df_results = pd.DataFrame(records)
+            cat_summary = (
+                df_results.groupby("Category")["Accuracy"]
+                .mean()
+                .round(2)
+                .reset_index()
+                .rename(columns={"Accuracy": "Mean_Corrupted_Acc"})
             )
+            cat_summary["Clean_Baseline"] = round(clean_acc, 2)
+            cat_summary["Mean_Drop"] = (clean_acc - cat_summary["Mean_Corrupted_Acc"]).round(2)
+            print("\n" + "=" * 55)
+            print("  CATEGORY ROBUSTNESS SUMMARY")
+            print("=" * 55)
+            print(cat_summary.to_string(index=False))
 
-            print(
-                f"  Sev {sev}: Acc={c_acc:5.2f}% (Drop: -{acc_drop:5.2f}%) | "
-                f"Macro F1={c_macro_f1:.4f} | Loss={c_loss:.4f}"
-            )
+            cat_summary_csv = output_dir / f"robustness_{args.model_type}_{args.dataset}_category_summary.csv"
+            cat_summary.to_csv(cat_summary_csv, index=False)
 
-    elapsed_min = (time.time() - start_time) / 60.0
-    print("=" * 70)
-    print(f"Robustness Benchmark Finished in {elapsed_min:.2f} minutes.")
+            # Overall Mean Corruption Accuracy
+            mean_corrupted_acc = df_results["Accuracy"].mean()
+            print("-" * 55)
+            print(f"Clean Baseline Accuracy:          {clean_acc:.2f}%")
+            print(f"Mean Corrupted Accuracy ({len(records)} conds): {mean_corrupted_acc:.2f}%")
+            print(f"Average Accuracy Degradation:     -{clean_acc - mean_corrupted_acc:.2f}%")
+            print("=" * 55)
 
-    # 4. Save Tabular CSV Results
-    df_results = pd.DataFrame(records)
+            # 5. Generate Publication Degradation Plots into output_dir
+            if args.save_plots:
+                print("\nGenerating publication figures...")
+                plot_degradation_curves(
+                    df_results=df_results,
+                    clean_acc=clean_acc,
+                    model_name=args.model_type,
+                    dataset_name=args.dataset,
+                    save_dir=output_dir,
+                )
 
-    # Detailed 70-row CSV
-    detailed_csv = CSV_RESULTS_DIR / f"robustness_{args.model_type}_{args.dataset}_detailed.csv"
-    df_results.to_csv(detailed_csv, index=False)
-    print(f"Saved detailed 70-condition CSV to: {detailed_csv.name}")
-
-    # Matrix Table (14 rows x 5 severities + Mean Accuracy)
-    pivot_acc = df_results.pivot(index="Corruption", columns="Severity", values="Accuracy")
-    pivot_acc["Mean_Acc"] = pivot_acc.mean(axis=1).round(2)
-    pivot_acc["Clean_Acc"] = round(clean_acc, 2)
-    matrix_csv = CSV_RESULTS_DIR / f"robustness_{args.model_type}_{args.dataset}_matrix.csv"
-    pivot_acc.to_csv(matrix_csv)
-    print(f"Saved summary matrix CSV to:       {matrix_csv.name}")
-
-    # 5. Category-wise Summary & mCE (Mean Corruption Error)
-    cat_summary = (
-        df_results.groupby("Category")["Accuracy"]
-        .mean()
-        .round(2)
-        .reset_index()
-        .rename(columns={"Accuracy": "Mean_Corrupted_Acc"})
-    )
-    cat_summary["Clean_Baseline"] = round(clean_acc, 2)
-    cat_summary["Mean_Drop"] = (clean_acc - cat_summary["Mean_Corrupted_Acc"]).round(2)
-    print("\n" + "=" * 55)
-    print("  CATEGORY ROBUSTNESS SUMMARY")
-    print("=" * 55)
-    print(cat_summary.to_string(index=False))
-
-    # Overall Mean Corruption Accuracy
-    mean_corrupted_acc = df_results["Accuracy"].mean()
-    print("-" * 55)
-    print(f"Clean Baseline Accuracy:          {clean_acc:.2f}%")
-    print(f"Mean Corrupted Accuracy (All 70): {mean_corrupted_acc:.2f}%")
-    print(f"Average Accuracy Degradation:     -{clean_acc - mean_corrupted_acc:.2f}%")
-    print("=" * 55)
-
-    # 6. Generate Publication Degradation Plots
-    if args.save_plots:
-        print("\nGenerating publication figures...")
-        plot_degradation_curves(
-            df_results=df_results,
-            clean_acc=clean_acc,
-            model_name=args.model_type,
-            dataset_name=args.dataset,
-            save_dir=PLOTS_RESULTS_DIR,
-        )
-    print("=" * 70)
+    except KeyboardInterrupt:
+        print("\n" + "!" * 70)
+        print("  [INTERRUPTED] Benchmark execution was interrupted by user (Ctrl+C).")
+        print(f"  All completed conditions ({len(records)}) were safely persisted on the go:")
+        print(f"    - Real-time Log: {log_txt_path}")
+        print(f"    - Detailed CSV:  {detailed_csv_path}")
+        print(f"    - Matrix CSV:    {matrix_csv_path}")
+        print("!" * 70)
+    finally:
+        sys.stdout = original_stdout
+        tee.close()
 
 
 def parse_args():
@@ -441,7 +537,19 @@ def parse_args():
         "--save_plots",
         action="store_true",
         default=True,
-        help="Generate degradation curve figures into results/plots/",
+        help="Generate degradation curve figures into corruptions results folder",
+    )
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        default=str(DEFAULT_CORRUPTIONS_DIR),
+        help=f"Directory to save metrics, logs, and plots (default: {DEFAULT_CORRUPTIONS_DIR})",
+    )
+    parser.add_argument(
+        "--append_log",
+        action="store_true",
+        default=False,
+        help="Append to existing text log instead of creating a fresh one at start",
     )
     return parser.parse_args()
 
@@ -449,3 +557,4 @@ def parse_args():
 if __name__ == "__main__":
     args = parse_args()
     run_robustness_experiment(args)
+
