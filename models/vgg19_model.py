@@ -34,6 +34,7 @@ class VGG19SignClassifier(nn.Module):
         in_channels: int = 3,
         dropout_rate: float = 0.5,
         compact_head: bool = True,
+        **kwargs,
     ):
         """
         Args:
@@ -125,6 +126,7 @@ def get_vgg19_model(
     use_batch_norm: bool = True,
     in_channels: int = 3,
     compact_head: bool = True,
+    **kwargs,
 ) -> VGG19SignClassifier:
     """
     Factory function to instantiate the VGG19 model.
@@ -174,6 +176,7 @@ class VGG19BN_MSFF(nn.Module):
         dropout_rate: float = 0.5,
         use_se: bool = False,
         se_reduction: int = 16,
+        **kwargs,
     ):
         """
         Args:
@@ -297,6 +300,7 @@ class VGG19BN_MSFF_Attn(VGG19BN_MSFF):
         in_channels: int = 3,
         dropout_rate: float = 0.5,
         se_reduction: int = 16,
+        **kwargs,
     ):
         super(VGG19BN_MSFF_Attn, self).__init__(
             num_classes=num_classes,
@@ -315,6 +319,7 @@ def get_vgg19_msff_model(
     dropout_rate: float = 0.5,
     use_se: bool = False,
     se_reduction: int = 16,
+    **kwargs,
 ) -> VGG19BN_MSFF:
     """Factory function for VGG19-BN MSFF model (without SE attention)."""
     return VGG19BN_MSFF(
@@ -333,6 +338,7 @@ def get_vgg19_msff_attn_model(
     in_channels: int = 3,
     dropout_rate: float = 0.5,
     se_reduction: int = 16,
+    **kwargs,
 ) -> VGG19BN_MSFF_Attn:
     """Factory function for VGG19-BN MSFF model with Squeeze-and-Excitation (SE) Attention."""
     return VGG19BN_MSFF_Attn(
@@ -370,4 +376,3 @@ if __name__ == "__main__":
     assert out_msff_attn.shape == (2, 43)
 
     print("All VGG19, MSFF, and MSFF-Attn models verified successfully!")
-

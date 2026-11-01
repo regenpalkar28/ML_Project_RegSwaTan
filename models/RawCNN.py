@@ -127,6 +127,7 @@ def get_model(
         )
     elif mtype in ["vgg19_msff", "vgg19_bn_msff", "msff"]:
         from .vgg19_model import get_vgg19_msff_model
+        kwargs.pop("compact_head", None)
         return get_vgg19_msff_model(
             num_classes=num_classes,
             in_channels=in_channels,
@@ -134,6 +135,7 @@ def get_model(
         )
     elif mtype in ["vgg19_msff_attn", "vgg19_bn_msff_attn", "vgg19_msff_se", "vgg19_bn_msff_se", "msff_attn", "msff_se"]:
         from .vgg19_model import get_vgg19_msff_attn_model
+        kwargs.pop("compact_head", None)
         return get_vgg19_msff_attn_model(
             num_classes=num_classes,
             in_channels=in_channels,
